@@ -1,0 +1,13 @@
+.setting {
+    background-color: white;
+    border-radius: 20px;
+    height: 80%;
+    width: 20%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#exampleColorInput {
+    width: 100%;
+}

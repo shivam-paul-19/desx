@@ -1,8 +1,16 @@
 #root {
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  /* margin: 0 auto; */
+  /* padding: 2rem; */
   text-align: center;
+}
+
+.page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .toolbar {
@@ -13,5 +21,5 @@
   height: 50px;
   width: 500px;
   background-color: rgb(67, 67, 67);
-  margin-bottom: 30px;
+  margin-top: 30px;
 }

@@ -4,6 +4,7 @@ import RectangleOutlinedIcon from '@mui/icons-material/RectangleOutlined';
 import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
 import IconButton from '@mui/material/IconButton';
 import './App.css'
+import Settings from './Settings';
 
 function App() {
   const canvasRef = useRef(null);
@@ -47,7 +48,7 @@ function App() {
         top: 100,
         left: 100,
         radius: 50,
-        fill: "#00ff00"
+        fill: "#000000"
       });
 
       canvas.add(cir);
@@ -55,18 +56,20 @@ function App() {
   }
 
   return (
-    <>
-      <div className='toolbar'>
-        <IconButton onClick={addRect}>
-          <RectangleOutlinedIcon />
-        </IconButton>
-        <IconButton onClick={addCircle}>
-          <CircleOutlinedIcon />
-        </IconButton>
-
+    <div className='page'>
+      <div className="mainSec">
+        <canvas id='canvas' ref={canvasRef}></canvas>
+        <div className='toolbar'>
+          <IconButton onClick={addRect}>
+            <RectangleOutlinedIcon style={{ color: '#ffffff' }} />
+          </IconButton>
+          <IconButton onClick={addCircle}>
+            <CircleOutlinedIcon style={{ color: '#ffffff' }}/>
+          </IconButton>
+        </div>
       </div>
-      <canvas id='canvas' ref={canvasRef}></canvas>
-    </>
+      <Settings canvas={canvas} />
+    </ div>
   )
 }
 
