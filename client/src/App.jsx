@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
-import { Canvas, Circle, Rect } from 'fabric'
+import { Canvas, Circle, Rect, IText } from 'fabric'
 import RectangleOutlinedIcon from '@mui/icons-material/RectangleOutlined';
 import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
+import TextFieldsOutlinedIcon from '@mui/icons-material/TextFieldsOutlined';
 import IconButton from '@mui/material/IconButton';
 import './App.css'
 import Settings from './Settings';
@@ -55,6 +56,22 @@ function App() {
     }
   }
 
+  const addText = () => {
+    if(canvas) {
+      const text = new IText('Text', {
+        left: 100,
+        top: 100,
+        fontSize: 24,
+        fill: 'black',
+        fontFamily: 'Arial',
+        editable: true,
+      });
+
+      canvas.add(text);
+      canvas.setActiveObject(text);
+    }
+  }
+
   return (
     <div className='page'>
       <div className="mainSec">
@@ -65,6 +82,9 @@ function App() {
           </IconButton>
           <IconButton onClick={addCircle}>
             <CircleOutlinedIcon style={{ color: '#ffffff' }}/>
+          </IconButton>
+          <IconButton onClick={addText}>
+            <TextFieldsOutlinedIcon style={{ color: '#ffffff' }}/>
           </IconButton>
         </div>
       </div>
