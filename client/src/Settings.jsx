@@ -16,7 +16,10 @@ function Settings({ canvas }) {
     const [isBold, setIsBold] = useState(false);
     const [isItalic, setIsItalic] = useState(false);
     const [isUnderline, setIsUnderline] = useState(false);
-
+    const [lineLength, setLineLength] = useState("");
+    const [lineWidth, setLineWidth] = useState("");
+    const [lineColor, setLineColor] = useState("#000000");
+    const [lineStyle, setLineStyle] = useState("solid");
 
     useEffect(() => {
         if(canvas) {
@@ -40,8 +43,19 @@ function Settings({ canvas }) {
             canvas.on("selection:scaling", (event) => {
                 handleObjectSelection(event.target);
             });
+
+            const handleKeyDown = (event) => {
+                if (event.key === "Delete" && selectedObject) {
+                    deleteSelectedObject();
+                }
+            };
+
+            document.addEventListener("keydown", handleKeyDown);
+            return () => {
+                document.removeEventListener("keydown", handleKeyDown);
+            };
         }
-    }, [canvas]);
+    }, [canvas, selectedObject]);
 
     const handleObjectSelection = (object) => {
         if (!object) {
@@ -69,6 +83,25 @@ function Settings({ canvas }) {
             setFontFamily(object.fontFamily || 'Arial');
             setTextAlign(object.textAlign || 'left');
             setColor(object.fill || 'black');
+        } else if (object.type === 'line') {
+            const length = Math.sqrt(
+                Math.pow(object.x2 - object.x1, 2) + Math.pow(object.y2 - object.y1, 2)
+            );
+    
+            setLineLength(Math.round(length));
+            setLineWidth(object.strokeWidth || 2);
+            setLineColor(object.stroke || '#000000');
+            setLineStyle('solid');
+        }
+    };
+
+    const deleteSelectedObject = () => {
+        console.log('triggered');
+        if (selectedObject) {
+            canvas.remove(selectedObject);
+            setSelectedObject(null);
+            canvas.discardActiveObject();
+            canvas.renderAll();
         }
     };
 
@@ -123,8 +156,13 @@ function Settings({ canvas }) {
 
         setColor(value);
 
+        
         if(selectedObject) {
-            selectedObject.set({ fill: value });
+            if (selectedObject.type === 'line') {
+                selectedObject.set({ stroke: color });
+            } else {
+                selectedObject.set({ fill: value });
+            }
             canvas.renderAll();
         }
     };
@@ -176,8 +214,56 @@ function Settings({ canvas }) {
           }
           canvas.renderAll();
         }
-      };
+    };
       
+    const handleLineLengthChange = (e) => {
+        const newLength = parseInt(e.target.value, 10);
+        setLineLength(newLength);
+    
+        if (selectedObject && selectedObject.type === 'line') {
+            const angle = Math.atan2(selectedObject.y2 - selectedObject.y1, selectedObject.x2 - selectedObject.x1);
+            selectedObject.set({
+                x2: selectedObject.x1 + newLength * Math.cos(angle),
+                y2: selectedObject.y1 + newLength * Math.sin(angle),
+            });
+            canvas.renderAll();
+        }
+    };
+    
+    const handleLineWidthChange = (e) => {
+        const newWidth = parseInt(e.target.value, 10);
+        setLineWidth(newWidth);
+    
+        if (selectedObject && selectedObject.type === 'line') {
+            selectedObject.set({ strokeWidth: newWidth });
+            canvas.renderAll();
+        }
+    };
+
+    const handleLineStyleChange = (e) => {
+        const style = e.target.value;
+        setLineStyle(style);
+    
+        if (selectedObject && selectedObject.type === 'line') {
+            if (style === "solid") {
+                selectedObject.set({ 
+                    strokeDashArray: [], 
+                    strokeLineCap: "butt" // Normal line end for solid
+                });
+            } else if (style === "dotted") {
+                selectedObject.set({ 
+                    strokeDashArray: [1, 10], // Short dashes with gaps to look like dots
+                    strokeLineCap: "round"  // Rounded ends for the dot effect
+                });
+            } else if (style === "dashed") {
+                selectedObject.set({ 
+                    strokeDashArray: [10, 10], // Longer dashes and gaps
+                    strokeLineCap: "butt"     // Normal line end for dashed lines
+                });
+            }
+            canvas.renderAll();
+        }
+    };       
 
     return (
         <>
@@ -329,6 +415,39 @@ function Settings({ canvas }) {
                             </MenuItem>
                             ))}
                         </TextField> <br />
+                        <label for="exampleColorInput" class="form-label">Color</label>
+                        <input type="color" class="form-control form-control-color" id="exampleColorInput" value={color} title="Choose your color" onChange={handleColorChange}/>
+                    </>
+                )}
+
+                {selectedObject && selectedObject.type === 'line' && (
+                    <>
+                        {/* Line Length */}
+                        <TextField
+                            label="Length"
+                            value={lineLength}
+                            type="number"
+                            onChange={handleLineLengthChange}
+                            InputLabelProps={{ shrink: true }}
+                        />
+                        <br />
+
+                        {/* Line Width */}
+                        <TextField
+                            label="Width"
+                            value={lineWidth}
+                            type="number"
+                            onChange={handleLineWidthChange}
+                            InputLabelProps={{ shrink: true }}
+                        />
+                        <br />
+                        <label className="form-label">Style</label>
+                        <select value={lineStyle} onChange={handleLineStyleChange}>
+                            <option value="solid">Solid</option>
+                            <option value="dotted">Dotted</option>
+                            <option value="dashed">Dashed</option>
+                        </select>
+                        <br />
                         <label for="exampleColorInput" class="form-label">Color</label>
                         <input type="color" class="form-control form-control-color" id="exampleColorInput" value={color} title="Choose your color" onChange={handleColorChange}/>
                     </>

@@ -1,9 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { Canvas, Circle, Rect, IText } from 'fabric'
-import RectangleOutlinedIcon from '@mui/icons-material/RectangleOutlined';
-import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
-import TextFieldsOutlinedIcon from '@mui/icons-material/TextFieldsOutlined';
-import IconButton from '@mui/material/IconButton';
+import { Canvas, Circle, Rect, IText, Line } from 'fabric'
+import ToolBar from './ToolBar';
 import './App.css'
 import Settings from './Settings';
 
@@ -72,21 +69,60 @@ function App() {
     }
   }
 
+  const addLineTool = () => {
+      if (canvas) {
+          let isDrawing = false;
+          let line;
+
+          canvas.on('mouse:down', (event) => {
+              isDrawing = true;
+              const pointer = canvas.getPointer(event.e);
+              const points = [pointer.x, pointer.y, pointer.x, pointer.y];
+
+              line = new Line(points, {
+                  stroke: 'black',       // Line color
+                  strokeWidth: 2,        // Line thickness
+                  selectable: true,      // Allow selection of the line later
+                  originX: 'center',
+                  originY: 'center'
+              });
+
+              canvas.add(line);
+          });
+
+          canvas.on('mouse:move', (event) => {
+              if (!isDrawing) return;
+              const pointer = canvas.getPointer(event.e);
+              line.set({ x2: pointer.x, y2: pointer.y });
+              canvas.renderAll();
+          });
+
+          canvas.on('mouse:up', () => {
+              isDrawing = false;
+              line.setCoords();  // Sets final position and allows interaction
+              canvas.off('mouse:down'); // Disable drawing if needed
+              canvas.off('mouse:move');
+          });
+      }
+  };
+
+  // const activatePenTool = () => {
+  //   if (canvas) {
+  //       canvas.isDrawingMode = true;
+
+  //       const pen = new PencilBrush(canvas);
+  //       pen.color = '#000000'; // Set default color
+  //       pen.width = 5; // Set default brush width
+  //       pen.dashArray = []; // Solid line by default
+  //       canvas.renderAll();
+  //   }
+  // };
+
   return (
     <div className='page'>
       <div className="mainSec">
         <canvas id='canvas' ref={canvasRef}></canvas>
-        <div className='toolbar'>
-          <IconButton onClick={addRect}>
-            <RectangleOutlinedIcon style={{ color: '#ffffff' }} />
-          </IconButton>
-          <IconButton onClick={addCircle}>
-            <CircleOutlinedIcon style={{ color: '#ffffff' }}/>
-          </IconButton>
-          <IconButton onClick={addText}>
-            <TextFieldsOutlinedIcon style={{ color: '#ffffff' }}/>
-          </IconButton>
-        </div>
+        <ToolBar addCircle={addCircle} addRect={addRect} addText={addText} addLine={addLineTool}/>
       </div>
       <Settings canvas={canvas} />
     </ div>

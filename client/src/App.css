@@ -12,15 +12,3 @@
   justify-content: space-around;
   align-items: center;
 }
-
-.toolbar {
-  margin: auto;
-  display: flex;
-  border-radius: 10px;
-  justify-content: center;
-  align-items: center;
-  height: 50px;
-  width: 500px;
-  background-color: rgb(67, 67, 67);
-  margin-top: 30px;
-}
