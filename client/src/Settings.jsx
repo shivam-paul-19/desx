@@ -1,8 +1,10 @@
-import { Rect } from 'fabric';
+import { Circle, Rect, IText, Triangle, Line } from 'fabric';
 import { useState, useRef, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import './settings.css';
+
+let copiedObj = null;
 
 function Settings({ canvas }) {
     const [selectedObject, setSelectedObject] = useState(null);
@@ -20,6 +22,12 @@ function Settings({ canvas }) {
     const [lineWidth, setLineWidth] = useState("");
     const [lineColor, setLineColor] = useState("#000000");
     const [lineStyle, setLineStyle] = useState("solid");
+    const [imageHeight, setImageHeight] = useState("");
+    const [imageWidth, setImageWidth] = useState("");
+    const [triangleWidth, setTriangleWidth] = useState('');
+    const [triangleHeight, setTriangleHeight] = useState('');
+    const [strokeWidth, setStrokeWidth] = useState('');
+    const [strokeColor, setStrokeColor] = useState('');
 
     useEffect(() => {
         if(canvas) {
@@ -46,7 +54,16 @@ function Settings({ canvas }) {
 
             const handleKeyDown = (event) => {
                 if (event.key === "Delete" && selectedObject) {
-                    deleteSelectedObject();
+                    deleteSelectedObject(selectedObject);
+                } else if (event.ctrlKey && event.key === 'c') {
+                    copiedObj = copyObject();
+                } else if (event.ctrlKey && event.key === 'x') {
+                    copiedObj = copyObject();
+                    deleteSelectedObject(selectedObject);
+                    console.log(copiedObj);
+                } else if (event.ctrlKey && event.key === 'v') {
+                    pasteObj(copiedObj);
+                    copiedObj = null;
                 }
             };
 
@@ -69,11 +86,15 @@ function Settings({ canvas }) {
             setHeight(Math.round(object.height * object.scaleY));
             setRadius("");
             setColor(object.fill);
+            setStrokeWidth(object.strokeWidth);
+            setStrokeColor(object.stroke);
         } else if (object.type === 'circle') {
             setWidth("");
             setHeight("");
             setRadius(Math.round(object.radius * object.scaleX));
             setColor(object.fill);
+            setStrokeWidth(object.strokeWidth);
+            setStrokeColor(object.stroke);
         } else if (object.type === 'i-text') {
             setWidth("");
             setHeight("");
@@ -92,18 +113,98 @@ function Settings({ canvas }) {
             setLineWidth(object.strokeWidth || 2);
             setLineColor(object.stroke || '#000000');
             setLineStyle('solid');
+        } else if (object.type === 'image') {
+            setImageWidth(Math.round(object.width * object.scaleX));
+            setImageHeight(Math.round(object.height * object.scaleY));
+            setRadius("");
+        } else if (object.type === 'triangle') {
+            setTriangleWidth(Math.round(object.width * object.scaleX));
+            setTriangleHeight(Math.round(object.height * object.scaleY));
+            setRadius("");
+            setStrokeWidth(object.strokeWidth);
+            setStrokeColor(object.stroke);
         }
     };
 
-    const deleteSelectedObject = () => {
-        console.log('triggered');
-        if (selectedObject) {
-            canvas.remove(selectedObject);
-            setSelectedObject(null);
-            canvas.discardActiveObject();
-            canvas.renderAll();
-        }
+    const deleteSelectedObject = (selectedObject) => {
+        canvas.remove(selectedObject);
+        setSelectedObject(null);
+        canvas.discardActiveObject();
+        canvas.renderAll(); 
     };
+
+    const copyObject = () => {
+        if (selectedObject) {
+            if(selectedObject.type === 'rect') {
+                const newRect = new Rect({
+                    top: 100,
+                    left: 100,
+                    fill: selectedObject.fill,
+                    height: selectedObject.height,
+                    width: selectedObject.width,
+                    stroke: selectedObject.stroke,
+                    strokeWidth: selectedObject.strokeWidth
+                })
+    
+                return newRect;
+
+            } else if (selectedObject.type === 'circle') {
+                const newCircle = new Circle({
+                    top: 100,
+                    left: 100,
+                    fill: selectedObject.fill,
+                    radius: selectedObject.radius,
+                    stroke: selectedObject.stroke,
+                    strokeWidth: selectedObject.strokeWidth
+                })
+    
+                return newCircle;
+
+            } else if (selectedObject.type === 'i-text') {
+                const newText = new IText(selectedObject.text, {
+                    left: 100,
+                    top: 100,
+                    fontSize: selectedObject.fontSize,
+                    fill: selectedObject.fill,
+                    fontFamily: selectedObject.fontFamily,
+                    editable: true
+                });
+
+                return newText;
+
+            } else if (selectedObject.type === 'triangle') {
+                const newTri = new Triangle({
+                    top: 100,
+                    left: 50,
+                    height: selectedObject.height,
+                    width: selectedObject.width,
+                    fill: selectedObject.fill,
+                    stroke: selectedObject.stroke,
+                    strokeWidth: selectedObject.strokeWidth
+                });
+
+                return newTri;
+
+            } else if (selectedObject.type === 'line') {
+                const newLine = new Line([selectedObject.x1, selectedObject.y1, selectedObject.x2, selectedObject.y2], {
+                    top: 100,
+                    left: 100,
+                    stroke: selectedObject.stroke,
+                    strokeWidth: selectedObject.strokeWidth
+                });
+
+                return newLine;
+            }
+        }
+    }
+
+    const pasteObj = (copiedObj) => {
+        if(copiedObj == null) {
+            return;
+        }
+
+        canvas.add(copiedObj);
+    }
 
     const clearSettings = () => {
         setRadius("");
@@ -240,6 +341,26 @@ function Settings({ canvas }) {
         }
     };
 
+    const handleStrokeWidthChange = (e) => {
+        const newStrokeWidth = parseInt(e.target.value, 10);
+        setStrokeWidth(newStrokeWidth);
+
+        if(selectedObject) {
+            selectedObject.set({ strokeWidth: newStrokeWidth });
+            canvas.renderAll();
+        }
+    }
+
+    const handleStrokeColorChange = (e) => {
+        const newStrokeColor = e.target.value;
+        setStrokeColor(newStrokeColor);
+
+        if(selectedObject && selectedObject.strokeWidth > 0) {
+            selectedObject.set({ stroke: newStrokeColor });
+            canvas.renderAll();
+        }
+    }
+
     const handleLineStyleChange = (e) => {
         const style = e.target.value;
         setLineStyle(style);
@@ -264,6 +385,57 @@ function Settings({ canvas }) {
             canvas.renderAll();
         }
     };       
+
+    const handleImageHeightChange = (e) => {
+        const value = e.target.value.replace(/,/g, "");
+        const intValue = parseInt(value, 10);
+
+        setImageHeight(intValue);
+
+        if (selectedObject && selectedObject.type === 'image' && intValue >= 0) {
+            const newScaleY = intValue / selectedObject.height;
+            selectedObject.set({ scaleY: newScaleY });
+            canvas.renderAll();
+        }
+    }
+
+    const handleImageWidthChange = (e) => {
+        const value = e.target.value.replace(/,/g, "");
+        const intValue = parseInt(value, 10);
+
+        setImageWidth(intValue);
+
+        if (selectedObject && selectedObject.type === 'image' && intValue >= 0) {
+            const newScaleX = intValue / selectedObject.width;
+            selectedObject.set({ scaleX: newScaleX });
+            canvas.renderAll();
+        }
+    }
+
+    const handleTriangleHeightChange = (e) => {
+        const value = e.target.value.replace(/,/g, "");
+        const intValue = parseInt(value, 10);
+
+        setTriangleHeight(intValue);
+
+        if (selectedObject && selectedObject.type === 'triangle' && intValue >= 0) {
+            selectedObject.set({height: intValue/selectedObject.scaleY});
+            canvas.renderAll();
+        }
+    }
+
+    const handleTriangleWidthChange = (e) => {
+        const value = e.target.value.replace(/,/g, "");
+        const intValue = parseInt(value, 10);
+
+        setTriangleWidth(intValue);
+
+        if (selectedObject && selectedObject.type === 'triangle' && intValue >= 0) {
+            selectedObject.set({width: intValue/selectedObject.scaleX});
+            canvas.renderAll();
+        }
+    }
+
 
     return (
         <>
@@ -294,8 +466,23 @@ function Settings({ canvas }) {
                             }}
                             onChange={handleWidthChange}
                         /> <br />
-                        <label for="exampleColorInput" class="form-label">Color</label>
+                        <label for="exampleColorInput" class="form-label">Fill Color</label>
                         <input type="color" class="form-control form-control-color" id="exampleColorInput" value={color} title="Choose your color" onChange={handleColorChange}/>
+                        <br />
+                        <TextField
+                            id="outlined-number"
+                            label="Stroke width"
+                            defaultValue={strokeWidth}
+                            type="number"
+                            slotProps={{
+                                inputLabel: {
+                                shrink: true,
+                                },
+                            }}
+                            onChange={handleStrokeWidthChange}
+                        /> <br />
+                        <label for="exampleColorInput" class="form-label">Stroke Color</label>
+                        <input type="color" class="form-control form-control-color" id="exampleColorInput" value={strokeColor} title="Choose your color" onChange={handleStrokeColorChange}/>
                     </>
                 )}
 
@@ -313,9 +500,24 @@ function Settings({ canvas }) {
                             }}
                             onChange={handleRadiusChange}
                         /> <br />
-                        <label for="exampleColorInput" class="form-label">Color</label>
+                        <label for="exampleColorInput" class="form-label">Fill Color</label>
                         <input type="color" class="form-control form-control-color" id="exampleColorInput" value={color} title="Choose your color" onChange={handleColorChange}/>
-                    </>
+                        <br />
+                        <TextField
+                            id="outlined-number"
+                            label="Stroke width"
+                            defaultValue={strokeWidth}
+                            type="number"
+                            slotProps={{
+                                inputLabel: {
+                                shrink: true,
+                                },
+                            }}
+                            onChange={handleStrokeWidthChange}
+                        /> <br />
+                        <label for="exampleColorInput" class="form-label">Stroke Color</label>
+                        <input type="color" class="form-control form-control-color" id="exampleColorInput" value={strokeColor} title="Choose your color" onChange={handleStrokeColorChange}/>
+                    </> 
                 )}
 
                 {selectedObject && selectedObject.type === 'i-text' && (
@@ -450,6 +652,81 @@ function Settings({ canvas }) {
                         <br />
                         <label for="exampleColorInput" class="form-label">Color</label>
                         <input type="color" class="form-control form-control-color" id="exampleColorInput" value={color} title="Choose your color" onChange={handleColorChange}/>
+                    </>
+                )}
+
+                {selectedObject && selectedObject.type === 'image' && (
+                    <>
+                        <TextField
+                            id="outlined-number"
+                            label="Height"
+                            defaultValue={imageHeight}
+                            type="number"
+                            slotProps={{
+                                inputLabel: {
+                                shrink: true,
+                                },
+                            }}
+                            onChange={handleImageHeightChange}
+                        /> <br />
+                        <TextField
+                            id="outlined-number"
+                            label="Width"
+                            defaultValue={imageWidth}
+                            type="number"
+                            slotProps={{
+                                inputLabel: {
+                                shrink: true,
+                                },
+                            }}
+                            onChange={handleImageWidthChange}
+                        />
+                    </>
+                )}
+
+                {selectedObject && selectedObject.type === 'triangle' && (
+                    <>
+                        <TextField
+                            id="outlined-number"
+                            label="Height"
+                            defaultValue={triangleHeight}
+                            type="number"
+                            slotProps={{
+                                inputLabel: {
+                                shrink: true,
+                                },
+                            }}
+                            onChange={handleTriangleHeightChange}
+                        /> <br />
+                        <TextField
+                            id="outlined-number"
+                            label="Width"
+                            defaultValue={triangleWidth}
+                            type="number"
+                            slotProps={{
+                                inputLabel: {
+                                shrink: true,
+                                },
+                            }}
+                            onChange={handleTriangleWidthChange}
+                        /> <br />
+                        <label for="exampleColorInput" class="form-label">FIll Color</label>
+                        <input type="color" class="form-control form-control-color" id="exampleColorInput" value={color} title="Choose your color" onChange={handleColorChange}/>
+                        <br />
+                        <TextField
+                            id="outlined-number"
+                            label="Stroke width"
+                            defaultValue={strokeWidth}
+                            type="number"
+                            slotProps={{
+                                inputLabel: {
+                                shrink: true,
+                                },
+                            }}
+                            onChange={handleStrokeWidthChange}
+                        /> <br />
+                        <label for="exampleColorInput" class="form-label">Stroke Color</label>
+                        <input type="color" class="form-control form-control-color" id="exampleColorInput" value={strokeColor} title="Choose your color" onChange={handleStrokeColorChange}/>
                     </>
                 )}
 

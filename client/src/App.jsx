@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { Canvas, Circle, Rect, IText, Line } from 'fabric'
+import { Canvas, Circle, Rect, IText, Line, Image, Triangle } from 'fabric'
 import ToolBar from './ToolBar';
 import './App.css'
 import Settings from './Settings';
@@ -7,6 +7,7 @@ import Settings from './Settings';
 function App() {
   const canvasRef = useRef(null);
   const [canvas, setCanvas] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if(canvasRef.current) {
@@ -33,7 +34,9 @@ function App() {
         left: 50,
         height: 50,
         width: 100,
-        fill: "#000000"
+        fill: "#041fa4",
+        stroke: '#000000',
+        strokeWidth: 2
       });
 
       canvas.add(rect);
@@ -46,7 +49,9 @@ function App() {
         top: 100,
         left: 100,
         radius: 50,
-        fill: "#000000"
+        fill: "#041fa4",
+        stroke: '#000000',
+        strokeWidth: 2
       });
 
       canvas.add(cir);
@@ -118,11 +123,63 @@ function App() {
   //   }
   // };
 
+  const addImage = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const imgURL = e.target.result;
+          let imageEl = document.createElement('img');
+          imageEl.src = imgURL;
+          imageEl.onload = () => {
+            let image = new Image(imageEl);
+            canvas.add(image);
+            canvas.centerObject(image);
+            canvas.setActiveObject(image);
+          }
+        }
+    }
+  };
+
+  const addTriangle = () => {
+    if(canvas) {
+      const tri = new Triangle({
+        top: 100,
+        left: 50,
+        height: 100,
+        width: 100,
+        fill: "#041fa4",
+        stroke: '#000000',
+        strokeWidth: 2
+      });
+
+      canvas.add(tri);
+    }
+  }
+
+  const clearCanvas = () => {
+    if (canvas) {
+      canvas.getObjects().forEach(obj => {
+        canvas.remove(obj);  // Removes all objects from the canvas
+      });
+      canvas.renderAll();
+    }
+  }
+
+  const saveCanvasAsImage = () => {
+    const dataUrl = canvas.toDataURL({ format: 'png' });
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = 'canvas_image.png';
+    link.click();
+  };
+
   return (
     <div className='page'>
       <div className="mainSec">
         <canvas id='canvas' ref={canvasRef}></canvas>
-        <ToolBar addCircle={addCircle} addRect={addRect} addText={addText} addLine={addLineTool}/>
+        <ToolBar addCircle={addCircle} addRect={addRect} addText={addText} addLine={addLineTool} handleImageUpload={addImage} addTriangle={addTriangle} clear={clearCanvas} download={saveCanvasAsImage}/>
       </div>
       <Settings canvas={canvas} />
     </ div>
