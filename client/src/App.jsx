@@ -3,11 +3,13 @@ import { Canvas, Circle, Rect, IText, Line, Image, Triangle } from 'fabric'
 import ToolBar from './ToolBar';
 import './App.css'
 import Settings from './Settings';
+import { handleObjectMoving, clearGuidelines } from './Snapping';
 
 function App() {
   const canvasRef = useRef(null);
   const [canvas, setCanvas] = useState(null);
   const fileInputRef = useRef(null);
+  const [guideLines, setGuideLines] = useState([]);
 
   useEffect(() => {
     if(canvasRef.current) {
@@ -20,6 +22,14 @@ function App() {
       initCanvas.renderAll();
 
       setCanvas(initCanvas);
+
+      initCanvas.on('object:moving', (event) => {
+        handleObjectMoving(initCanvas, event.target, guideLines, setGuideLines);
+      });
+
+      initCanvas.on('object:modified', () => {
+        clearCanvas(initCanvas);
+      });
 
       return () => {
         initCanvas.dispose();
@@ -110,18 +120,6 @@ function App() {
           });
       }
   };
-
-  // const activatePenTool = () => {
-  //   if (canvas) {
-  //       canvas.isDrawingMode = true;
-
-  //       const pen = new PencilBrush(canvas);
-  //       pen.color = '#000000'; // Set default color
-  //       pen.width = 5; // Set default brush width
-  //       pen.dashArray = []; // Solid line by default
-  //       canvas.renderAll();
-  //   }
-  // };
 
   const addImage = (event) => {
     const file = event.target.files[0];

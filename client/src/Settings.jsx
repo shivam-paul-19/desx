@@ -1,5 +1,5 @@
 import { Circle, Rect, IText, Triangle, Line } from 'fabric';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import './settings.css';
@@ -28,6 +28,8 @@ function Settings({ canvas }) {
     const [triangleHeight, setTriangleHeight] = useState('');
     const [strokeWidth, setStrokeWidth] = useState('');
     const [strokeColor, setStrokeColor] = useState('');
+    const [canvasHeight, setCanvasHeight] = useState(500);
+    const [canvasWidth, setCanvasWidth] = useState(1000);
 
     useEffect(() => {
         if(canvas) {
@@ -47,10 +49,14 @@ function Settings({ canvas }) {
             canvas.on("selection:modified", (event) => {
                 handleObjectSelection(event.target);
             });
-
+            
             canvas.on("selection:scaling", (event) => {
                 handleObjectSelection(event.target);
             });
+
+            canvas.setHeight(canvasHeight);
+            canvas.setWidth(canvasWidth);
+            canvas.renderAll();
 
             const handleKeyDown = (event) => {
                 if (event.key === "Delete" && selectedObject) {
@@ -71,11 +77,13 @@ function Settings({ canvas }) {
             return () => {
                 document.removeEventListener("keydown", handleKeyDown);
             };
+
         }
-    }, [canvas, selectedObject]);
+    }, [canvas, selectedObject, canvasHeight, canvasWidth]);
 
     const handleObjectSelection = (object) => {
         if (!object) {
+            setSelectedObject(canvas);
             return;
         }
 
@@ -123,6 +131,9 @@ function Settings({ canvas }) {
             setRadius("");
             setStrokeWidth(object.strokeWidth);
             setStrokeColor(object.stroke);
+        } else {
+            setCanvasHeight(object.height);
+            setCanvasWidth(object.width);
         }
     };
 
@@ -436,12 +447,29 @@ function Settings({ canvas }) {
         }
     }
 
+    const handleCanvasHeightChange = (e) => {
+        const intValue = parseInt(e.target.value);
+
+        if (!selectedObject && intValue >= 0) {
+            setCanvasHeight(intValue);
+        }
+    }
+
+    const handleCanvasWidthChange = (e) => {
+        const intValue = parseInt(e.target.value);
+
+        if (!selectedObject && intValue >= 0) {
+            setCanvasWidth(intValue);
+        }
+    }
+
 
     return (
         <>
             <div className="setting">
                 {selectedObject && selectedObject.type === 'rect' && (
                     <>
+                        <h3>Rectangle</h3> <br />
                         <TextField
                             id="outlined-number"
                             label="Height"
@@ -488,6 +516,7 @@ function Settings({ canvas }) {
 
                 {selectedObject && selectedObject.type === 'circle' && (
                     <>
+                        <h3>Circle</h3> <br />
                         <TextField
                             id="outlined-number"
                             label="Radius"
@@ -522,6 +551,7 @@ function Settings({ canvas }) {
 
                 {selectedObject && selectedObject.type === 'i-text' && (
                     <>
+                        <h3>Text</h3> <br />
                         {/* Font Size */}
                         <TextField
                             id="outlined-number"
@@ -624,6 +654,7 @@ function Settings({ canvas }) {
 
                 {selectedObject && selectedObject.type === 'line' && (
                     <>
+                        <h3>Line</h3> <br />
                         {/* Line Length */}
                         <TextField
                             label="Length"
@@ -656,7 +687,8 @@ function Settings({ canvas }) {
                 )}
 
                 {selectedObject && selectedObject.type === 'image' && (
-                    <>
+                    <>  
+                        <h3>Image</h3> <br />
                         <TextField
                             id="outlined-number"
                             label="Height"
@@ -685,7 +717,8 @@ function Settings({ canvas }) {
                 )}
 
                 {selectedObject && selectedObject.type === 'triangle' && (
-                    <>
+                    <>  
+                        <h3>Triangle</h3> <br />
                         <TextField
                             id="outlined-number"
                             label="Height"
@@ -727,6 +760,36 @@ function Settings({ canvas }) {
                         /> <br />
                         <label for="exampleColorInput" class="form-label">Stroke Color</label>
                         <input type="color" class="form-control form-control-color" id="exampleColorInput" value={strokeColor} title="Choose your color" onChange={handleStrokeColorChange}/>
+                    </>
+                )}
+
+                {!(selectedObject) && (
+                    <>
+                        <h3>Canvas</h3> <br />
+                        <TextField
+                            id="outlined-number"
+                            label="Height"
+                            defaultValue={canvasHeight}
+                            type="number"
+                            slotProps={{
+                                inputLabel: {
+                                shrink: true,
+                                },
+                            }}
+                            onChange={handleCanvasHeightChange}
+                        /> <br />
+                        <TextField
+                            id="outlined-number"
+                            label="Width"
+                            defaultValue={canvasWidth}
+                            type="number"
+                            slotProps={{
+                                inputLabel: {
+                                shrink: true,
+                                },
+                            }}
+                            onChange={handleCanvasWidthChange}
+                        /> 
                     </>
                 )}
 
