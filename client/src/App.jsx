@@ -1,12 +1,16 @@
-import './App.css'
 import CanvasPage from './CanvasPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './Home';
+import LandingPage from './LandingPage';
 
 function App() {
   const router = createBrowserRouter([
     {
       path: '/',
+      element: <LandingPage />
+    },
+    {
+      path: '/home',
       element: <Home />
     },
     {

@@ -7,11 +7,6 @@ function Home() {
         age: 20
     };
 
-    useEffect(async () => {
-        axios.get('/test');
-        await axios.post('/test_post', data);
-    }, []);
-
     return (
         <div>
             <h1 style={{

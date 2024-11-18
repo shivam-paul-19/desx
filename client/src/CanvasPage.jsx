@@ -6,7 +6,7 @@ import Settings from './Settings';
 import { handleObjectMoving, clearGuidelines } from './Snapping';
 
 function CanvasPage() {
-    const canvasRef = useRef(null);
+  const canvasRef = useRef(null);
   const [canvas, setCanvas] = useState(null);
   const fileInputRef = useRef(null);
   const [guideLines, setGuideLines] = useState([]);

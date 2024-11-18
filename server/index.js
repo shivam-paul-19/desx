@@ -9,11 +9,11 @@ app.listen(port, (req, res) => {
     console.log(`Server listening to port ${port}`);
 });
 
-app.get('/test', (req, res) => {
-    console.log('get request!');
+app.post('/create', (req, res) => {
+    console.log(req.body);
 });
 
-app.post('/test_post', (req, res) => {
-    console.log('recieving a post req');
+app.post('/login', (req, res) => {
+    console.log("login form submitted");
     console.log(req.body);
 });
