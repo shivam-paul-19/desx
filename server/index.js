@@ -14,6 +14,14 @@ app.post('/create', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
+    // email and password
     console.log("login form submitted");
-    console.log(req.body);
+    let email = req.body.email;
+    let pass = req.body.password;
+    if(email === 'shivampaul2319@gmail.com' && pass === 'password') {
+        console.log('approved!');
+        res.send(true);
+    } else {
+        res.send(false);
+    }
 });

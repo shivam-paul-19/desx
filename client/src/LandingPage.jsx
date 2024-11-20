@@ -1,40 +1,51 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 import './landingpage.css';
 import { Button } from "@/components/ui/button"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const getSignindetails = async (event) => {
+function LandingPage() {
+  const navigate = useNavigate();
+
+  const getSignindetails = async (event) => {
     event.preventDefault();
     let formData = {
-        email: event.target[0].value,
-        password: event.target[1].value
+      email: event.target[0].value,
+      password: event.target[1].value
     }
     
     await axios.post('/create', formData);
-}
+  }
 
-const getLoginDetails = async (event) => {
+  const getLoginDetails = async (event) => {
+    console.log('function called');
     event.preventDefault();
+    
     let formData = {
-        email: event.target[0].value,
-        password: event.target[1].value
+      email: event.target[0].value,
+      password: event.target[1].value
     }
 
-    await axios.post('/login', formData);
-}
-
-function LandingPage() {
+    let res = await axios.post('/login', formData);
+    if(res.data) {
+      console.log("correct password");
+      navigate('/canvas');
+    } else {
+      console.log("wrong password");
+      window.alert("wrong password");
+    }
+  }
     return (
       <div className="land">
         <img src="https://i.ibb.co/RDMkY25/text-logo-color.png" alt="" />
@@ -44,7 +55,7 @@ function LandingPage() {
           Playground! Unleash your creativity, bring your ideas to life, and
           craft stunning web interfaces effortlessly with our powerful tools and
           seamless experience.
-        </p>{" "}
+        </p>
         <br />
         <div className="button-box">
           <Dialog>
