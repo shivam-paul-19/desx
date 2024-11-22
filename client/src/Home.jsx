@@ -1,17 +1,10 @@
 import { useEffect } from "react";
 import axios from "axios";
 
-function Home() {
-    let data = {
-        name: 'Shivam',
-        age: 20
-    };
-
+function Home({user}) {
     return (
         <div>
-            <h1 style={{
-                color: "white"
-            }}>Ye home hai</h1>
+            <h1>Welocome {user}</h1>
         </div>
     )
 }

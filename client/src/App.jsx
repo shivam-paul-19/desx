@@ -11,7 +11,7 @@ function App() {
     },
     {
       path: '/home',
-      element: <Home />
+      element: <Home user="Shivam"/>
     },
     {
       path: '/canvas',
