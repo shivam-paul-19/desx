@@ -10,11 +10,34 @@ app.listen(port, (req, res) => {
     console.log(`Server listening to port ${port}`);
 });
 
-// email and password
+// name, email and password
 app.post('/create', (req, res) => {
-    let otp = Math.round(Math.random()*1000000);
+    let otp = Math.floor(100000 + Math.random() * 900000);
     let msg = `<h1>The OTP is: ${otp}</h1>`;
     sendMail(req.body.email, 'Welcome to DesX', msg);
+    let data = {
+        name: req.body.name,
+        mail: req.body.email,
+        otp: otp,
+        is_forget: false
+    }
+
+    res.send(data);
+});
+
+// forget password mailing route
+app.post('/forget', (req, res) => {
+    let otp = Math.floor(100000 + Math.random() * 900000);
+    let msg = `<h1>The OTP is: ${otp}</h1>`;
+    sendMail(req.body.mail, 'Recover your password', msg);
+    let data = {
+        name: req.body.name,
+        mail: req.body.email,
+        otp: otp,
+        is_forget: true
+    }
+
+    res.send(data);
 });
 
 app.post('/login', (req, res) => {

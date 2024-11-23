@@ -2,6 +2,7 @@ import CanvasPage from './CanvasPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './Home';
 import LandingPage from './LandingPage';
+import Validate from './Validation';
 
 function App() {
   const router = createBrowserRouter([
@@ -16,6 +17,10 @@ function App() {
     {
       path: '/canvas',
       element: <CanvasPage />
+    },
+    {
+      path: '/validate',
+      element: <Validate />
     }
   ])
   return (
