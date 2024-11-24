@@ -1,7 +1,6 @@
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import {
     InputOTP,
@@ -26,23 +25,29 @@ import {
 function Validate() {
     const navigate = useNavigate();
     const location = useLocation();
-    let {mail, otp, is_forget} = location.state || {};
+    let {name, mail, otp, is_forget, pass} = location.state || {};
     let [isOpen, setIsOpen] = useState(false);
 
-    const checkOTP = (event) => {
+    const checkOTP = async (event) => {
         event.preventDefault();
         let enteredOTP = event.target[0].value;
         if(otp == enteredOTP) {
             console.log("verification done");
             setIsOpen(true);
             if(!is_forget) {
-                // API to create database entry
+                let data = {
+                  name: name,
+                  mail: mail,
+                  pass: pass
+                }
+                await axios.post('/adduser', data);
             } else {
                 // navigate to reset password page
             }
         } else {
             console.log("OTP don't match");
             window.alert("Wrong OTP");
+            navigate('/');
         }
     };
 

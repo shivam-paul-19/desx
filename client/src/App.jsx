@@ -12,7 +12,7 @@ function App() {
     },
     {
       path: '/home',
-      element: <Home user="Shivam"/>
+      element: <Home />
     },
     {
       path: '/canvas',

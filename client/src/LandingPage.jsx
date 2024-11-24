@@ -30,17 +30,22 @@ function LandingPage() {
     
     let data = await axios.post('/create', formData);
     console.log(data.data);
-    navigate('/validate', {
-      state: {
-        mail: data.data.mail,
-        otp: data.data.otp,
-        is_forget: data.data.is_forget
-      }
-    })
+    if (data.data) {
+      navigate('/validate', {
+        state: {
+          name: data.data.name,
+          mail: data.data.mail,
+          otp: data.data.otp,
+          is_forget: data.data.is_forget,
+          pass: data.data.pass
+        }
+      })
+    } else {
+      window.alert("Account already exists, try to log in");
+    }
   }
 
   const getLoginDetails = async (event) => {
-    console.log('function called');
     event.preventDefault();
     
     let formData = {
@@ -49,12 +54,18 @@ function LandingPage() {
     }
 
     let res = await axios.post('/login', formData);
-    if(res.data) {
+    if(res.data[0] == "auth") {
       console.log("correct password");
-      navigate('/canvas');
-    } else {
+      navigate('/home', {
+        state: {
+          name: res.data[1]
+        }
+      });
+    } else if (res.data = "no-auth") {
       console.log("wrong password");
       window.alert("wrong password");
+    } else {
+      window.alert("Account not found");
     }
   }
 

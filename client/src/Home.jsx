@@ -1,12 +1,15 @@
 import { useEffect } from "react";
 import axios from "axios";
 import './home.css';
+import { useLocation } from "react-router-dom";
 
-function Home({user}) {
+function Home() {
+    const location = useLocation();
+    let {name} = location.state || {};
     return (
         <div className="home_page">
             <img id="home_img" src="https://i.ibb.co/RDMkY25/text-logo-color.png" alt="" />
-            <h1 id="welcome">Welcome {user}</h1>
+            <h1 id="welcome">Welcome {name}</h1>
         </div>
     )
 }
