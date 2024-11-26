@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from './Home';
 import LandingPage from './LandingPage';
 import Validate from './Validation';
+import SetPass from './setPass';
 
 function App() {
   const router = createBrowserRouter([
@@ -21,6 +22,10 @@ function App() {
     {
       path: '/validate',
       element: <Validate />
+    },
+    {
+      path: '/password',
+      element: <SetPass />
     }
   ])
   return (

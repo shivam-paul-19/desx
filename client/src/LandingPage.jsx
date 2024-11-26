@@ -2,6 +2,9 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+
 import './landingpage.css';
 import { Button } from "@/components/ui/button"
 import {
@@ -19,6 +22,22 @@ import { Label } from "@/components/ui/label"
 function LandingPage() {
   const navigate = useNavigate();
   let [forget, setForget] = useState(false);
+  let [eyeOpen, setEyeOpen] = useState(true);
+  let [hide, setHide] = useState("password");
+
+  const toggleEye = () => {
+    setEyeOpen(!eyeOpen);
+  }
+
+  const toggleVisibilty = () => {
+      if(hide == "password") {
+          setHide("text");
+      } else {
+          setHide("password");
+      }
+
+      toggleEye();
+  }
 
   const getSignindetails = async (event) => {
     event.preventDefault();
@@ -81,7 +100,7 @@ function LandingPage() {
       state: {
         mail: res.data.mail,
         otp: res.data.otp,
-        if_forget: res.data.is_forget
+        is_forget: res.data.is_forget
       }
     })
   }
@@ -128,6 +147,7 @@ function LandingPage() {
                       Create Password
                     </Label>
                     <Input
+                      type="text"
                       id="password"
                       defaultValue=""
                       className="col-span-3"
@@ -167,11 +187,14 @@ function LandingPage() {
                       Password
                     </Label>
                     <Input
-                      type="password"
+                      type={hide}
                       id="password"
                       defaultValue=""
                       className="col-span-3"
-                    />
+                      style={{
+                        display: "inline"
+                      }}
+                      />
                   </div>
                 </div>
                 <DialogFooter>
@@ -179,6 +202,9 @@ function LandingPage() {
                   <Button type="submit">Submit</Button>
                 </DialogFooter>
               </form>
+              {
+                (eyeOpen)? <div><VisibilityOutlinedIcon onClick={toggleVisibilty}/><i>&nbsp;show password</i></div>: <div><VisibilityOffOutlinedIcon onClick={toggleVisibilty}/><i>&nbsp;hide password</i></div>
+              }
             </DialogContent>
           </Dialog>
 

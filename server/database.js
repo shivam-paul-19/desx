@@ -26,3 +26,11 @@ export const insertUser = (mail, name, pass) => {
         console.log(err);
     });
 }
+
+export const updatePassword = async (mail, pass) => {
+    let newpass = await User.updateOne({
+        email: mail
+    }, {
+        password: pass
+    })
+}

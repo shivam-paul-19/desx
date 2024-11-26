@@ -20,7 +20,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 function Validate() {
     const navigate = useNavigate();
@@ -34,15 +34,20 @@ function Validate() {
         if(otp == enteredOTP) {
             console.log("verification done");
             setIsOpen(true);
+            let data = {
+              name: name,
+              mail: mail,
+              pass: pass
+            }
+            console.log(is_forget);
             if(!is_forget) {
-                let data = {
-                  name: name,
-                  mail: mail,
-                  pass: pass
-                }
-                await axios.post('/adduser', data);
+              await axios.post('/adduser', data);
             } else {
-                // navigate to reset password page
+              navigate('/password', {
+                state: {
+                  mail: data.mail
+                }
+              });
             }
         } else {
             console.log("OTP don't match");

@@ -4,6 +4,7 @@ import ToolBar from './ToolBar';
 import './canvaspage.css'
 import Settings from './Settings';
 import { handleObjectMoving, clearGuidelines } from './Snapping';
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
 
 function CanvasPage() {
   const canvasRef = useRef(null);
@@ -173,15 +174,38 @@ function CanvasPage() {
     link.click();
   };
 
+  const save = () => {
+    const canvasData = canvas.toJSON();
+    console.log(canvasData);
+  }
+
   return (
-    <div className='page'>
+    <div className="page">
       <div className="mainSec">
-        <canvas id='canvas' ref={canvasRef}></canvas>
-        <ToolBar addCircle={addCircle} addRect={addRect} addText={addText} addLine={addLineTool} handleImageUpload={addImage} addTriangle={addTriangle} clear={clearCanvas} download={saveCanvasAsImage}/>
+        <div className="header">
+          < ArrowBackIosRoundedIcon style={{ color: '#ffffff' }} />
+          &nbsp;&nbsp;&nbsp;
+          <h1 style={{
+            color: "white",
+            fontSize: 25
+          }}>Name</h1>
+        </div> <br />
+        <canvas id="canvas" ref={canvasRef}></canvas>
+        <ToolBar
+          addCircle={addCircle}
+          addRect={addRect}
+          addText={addText}
+          addLine={addLineTool}
+          handleImageUpload={addImage}
+          addTriangle={addTriangle}
+          clear={clearCanvas}
+          download={saveCanvasAsImage}
+          save={save}
+        />
       </div>
       <Settings canvas={canvas} />
-    </ div>
-  )
+    </div>
+  );
 }
 
 export default CanvasPage;

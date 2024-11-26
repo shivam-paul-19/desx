@@ -7,13 +7,14 @@ import TextFieldsOutlinedIcon from '@mui/icons-material/TextFieldsOutlined';
 import IconButton from '@mui/material/IconButton';
 import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
+import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import './toolbar.css';
 
-function ToolBar({addRect, addCircle, addText, addLine, addPen, handleImageUpload, addTriangle, clear, download}) {
+function ToolBar({addRect, addCircle, addText, addLine, addPen, handleImageUpload, addTriangle, clear, download, save}) {
     const fileInputRef = useRef(null);
     return (
         <div className='toolbar'>
@@ -68,6 +69,11 @@ function ToolBar({addRect, addCircle, addText, addLine, addPen, handleImageUploa
           <Tooltip TransitionComponent={Zoom} title="Download as PNG">
             <IconButton onClick={download}>
               <FileDownloadOutlinedIcon style={{ color: '#ffffff' }}/>
+            </IconButton>
+          </Tooltip>
+          <Tooltip TransitionComponent={Zoom} title="Save">
+            <IconButton onClick={save}>
+              <SaveOutlinedIcon style={{ color: '#ffffff' }}/>
             </IconButton>
           </Tooltip>
         </div>

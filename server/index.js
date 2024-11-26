@@ -1,7 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import { sendMail } from './mailing.js';
-import { insertUser } from './database.js';
+import { insertUser, updatePassword } from './database.js';
 import { User } from './models/users.js';
 const app = express();
 
@@ -64,12 +64,19 @@ app.post('/forget', (req, res) => {
     sendMail(req.body.mail, 'Recover your password', msg);
     let data = {
         name: req.body.name,
-        mail: req.body.email,
+        mail: req.body.mail,
         otp: otp,
         is_forget: true
     }
 
     res.send(data);
+});
+
+app.post('/update', async (req, res) => {
+    console.log(req.body);
+    await updatePassword(req.body.mail, req.body.newPass);
+    console.log("password updated");
+    res.send("updated");
 });
 
 // email and password
