@@ -10,6 +10,7 @@ export default defineConfig({
       '/login': 'http://localhost:8080',
       '/forget': 'http://localhost:8080',
       '/adduser': 'http://localhost:8080',
+      '/isuser': 'http://localhost:8080',
       '/update': 'http://localhost:8080'
     }
   },

@@ -1,5 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import { sendMail } from './mailing.js';
 import { insertUser, updatePassword } from './database.js';
 import { User } from './models/users.js';
@@ -7,7 +10,18 @@ const app = express();
 
 const port = 8080;
 
+dotenv.config();
+
 app.use(express.json());
+app.use(cookieParser(process.env.COOKIE_SECRET_CODE));
+app.use(session({
+    secret: "secrerstring",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+    }
+}));
 
 app.listen(port, (req, res) => {
     console.log(`Server listening to port ${port}`);
@@ -79,6 +93,14 @@ app.post('/update', async (req, res) => {
     res.send("updated");
 });
 
+app.get('/isuser', async (req, res) => {
+    if(req.signedCookies.uid) {
+        res.send(req.signedCookies.uid);
+    } else {
+        res.send(false);
+    }
+})
+
 // email and password
 app.post('/login', async (req, res) => {
     let user = await User.find({
@@ -93,6 +115,10 @@ app.post('/login', async (req, res) => {
 
         if(pass === pass_db) {
             console.log('approved!');
+            res.cookie("uid", user, {
+                expires: new Date(Date.now() + 1000 * 3600),
+                signed: true
+            });
             res.send(["auth", user[0].name]);
         } else {
             res.send("no-auth");

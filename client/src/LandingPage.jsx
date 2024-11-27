@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
@@ -21,6 +21,28 @@ import { Label } from "@/components/ui/label"
 
 function LandingPage() {
   const navigate = useNavigate();
+
+  const check = async () => {
+      try {
+        const checkUser = await axios.get('/isuser');
+        if (checkUser.data) {
+          console.log("user has found");
+          console.log(checkUser.data[0].name);
+          navigate('/home', {
+            state: {
+              name: checkUser.data[0].name
+            }
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+  }
+
+  useEffect(() => {
+    check();
+  }, []);
+  
   let [forget, setForget] = useState(false);
   let [eyeOpen, setEyeOpen] = useState(true);
   let [hide, setHide] = useState("password");
