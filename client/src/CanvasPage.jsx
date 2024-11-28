@@ -19,7 +19,11 @@ function CanvasPage() {
         height: 500
       });
 
+      let canvasJSON = { version: '6.4.3', objects: [], background: '#ffffff' }
+
+
       initCanvas.backgroundColor = '#ffffff';
+      initCanvas.loadFromJSON(canvasJSON);
       initCanvas.renderAll();
 
       setCanvas(initCanvas);
