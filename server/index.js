@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { sendMail } from './mailing.js';
-import { insertUser, updatePassword } from './database.js';
+import { insertCanvas, insertUser, updatePassword } from './database.js';
 import { User } from './models/users.js';
 const app = express();
 
@@ -49,12 +49,13 @@ app.post('/create', async (req, res) => {
         res.send(false);
     } else {
         let otp = Math.floor(100000 + Math.random() * 900000);
+        req.session.otp = otp;
         let msg = `<h1>The OTP is: ${otp}</h1>`;
         sendMail(req.body.email, 'Welcome to DesX', msg);
         let data = {
             name: req.body.name,
             mail: req.body.email,
-            otp: otp,
+            otp: req.session.otp,
             is_forget: false,
             pass: req.body.password
         }
@@ -69,6 +70,17 @@ app.post('/adduser', (req, res) => {
     let name = req.body.name;
     let pass = req.body.pass;
     insertUser(mail, name, pass);
+});
+
+app.post('/addcanvas', (req, res) => {
+    let date = new Date(Date.now());
+    const canvasData = {
+        user: req.signedCookies.uid[0].email,
+        name: req.body.name,
+        last_updated: date,
+        canvas_state: { version: '6.4.3', objects: [], background: '#ffffff' }
+    }
+    insertCanvas(canvasData);
 });
 
 // forget password mailing route
@@ -116,7 +128,7 @@ app.post('/login', async (req, res) => {
         if(pass === pass_db) {
             console.log('approved!');
             res.cookie("uid", user, {
-                expires: new Date(Date.now() + 1000 * 3600),
+                expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
                 signed: true
             });
             res.send(["auth", user[0].name]);
