@@ -12,6 +12,11 @@ export default defineConfig({
       '/adduser': 'http://localhost:8080',
       '/isuser': 'http://localhost:8080',
       '/addcanvas': 'http://localhost:8080',
+      '/updatecanvas': 'http://localhost:8080',
+      '/getcanvas': 'http://localhost:8080',
+      '/loadcanvas': 'http://localhost:8080',
+      '/getuser': 'http://localhost:8080',
+      '/deletecanvas': 'http://localhost:8080',
       '/update': 'http://localhost:8080'
     }
   },

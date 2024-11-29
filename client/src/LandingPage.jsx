@@ -24,6 +24,7 @@ function LandingPage() {
 
   const check = async () => {
       try {
+        console.log("it is executing");
         const checkUser = await axios.get('/isuser');
         if (checkUser.data) {
           console.log("user has found");

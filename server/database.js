@@ -34,9 +34,11 @@ export const insertCanvas = (canvas) => {
     canvas1.save()
     .then((res) => {
         console.log(res);
+        return true;
     })
     .catch((err) => {
         console.log(err);
+        return false;
     });
 }
 
@@ -46,4 +48,38 @@ export const updatePassword = async (mail, pass) => {
     }, {
         password: pass
     })
+};
+
+export const updateCanvas = async (user, name, state, time) => {
+    let newCanvas = await Canvas.updateOne({
+        user: user,
+        name: name
+    }, {
+        canvas_state: state,
+        last_updated: time
+    })
+};
+
+export const getCanvas = async (user) => {
+    let c = await Canvas.find({
+        user: user
+    });
+
+    return c;
+}
+
+export const loadCanvas = async (user, name) => {
+    let c = await Canvas.findOne({
+        name: name,
+        user: user
+    });
+
+    return c;
+}
+
+export const deleteCanvas = async(user, name) => {
+    await Canvas.deleteOne({
+        user: user,
+        name: name
+    });
 }

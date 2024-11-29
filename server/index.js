@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { sendMail } from './mailing.js';
-import { insertCanvas, insertUser, updatePassword } from './database.js';
+import { deleteCanvas, getCanvas, insertCanvas, insertUser, loadCanvas, updateCanvas, updatePassword } from './database.js';
 import { User } from './models/users.js';
 const app = express();
 
@@ -80,7 +80,45 @@ app.post('/addcanvas', (req, res) => {
         last_updated: date,
         canvas_state: { version: '6.4.3', objects: [], background: '#ffffff' }
     }
-    insertCanvas(canvasData);
+    let result = insertCanvas(canvasData);
+    res.send(result)
+});
+
+app.post('/updatecanvas', async (req, res) => {
+    const canvasData = {
+        user: req.signedCookies.uid[0].email,
+        name: req.body.name.name,
+        last_updated: req.body.time,
+        canvas_state: req.body.state
+    }
+    await updateCanvas(canvasData.user, canvasData.name, canvasData.canvas_state, canvasData.last_updated);
+});
+
+app.get('/getcanvas', async (req, res) => {
+    let canNames = [];
+    let canvases = await getCanvas(req.signedCookies.uid[0].email);
+    canvases.forEach((c) => canNames.push([c.name, c.last_updated]));
+    canNames.sort((a, b) => new Date(b[1]) - new Date(a[1]));
+    console.log(canNames);
+    res.send(canNames);
+});
+
+app.get('/getuser', (req, res) => {
+    res.send(req.signedCookies.uid[0].name);
+});
+
+app.post('/deletecanvas', async (req, res) => {
+    let name = req.body.name;
+    let user = req.signedCookies.uid[0].email;
+    await deleteCanvas(user, name);
+});
+
+app.post('/loadcanvas', async (req, res) => {
+    let name = req.body.name;
+    let user = req.signedCookies.uid[0].email;
+    let canState = await loadCanvas(user, name);
+    console.log(canState.canvas_state);
+    res.send(canState.canvas_state);
 });
 
 // forget password mailing route

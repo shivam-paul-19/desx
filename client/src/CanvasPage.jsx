@@ -5,12 +5,19 @@ import './canvaspage.css'
 import Settings from './Settings';
 import { handleObjectMoving, clearGuidelines } from './Snapping';
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 function CanvasPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const canvasRef = useRef(null);
   const [canvas, setCanvas] = useState(null);
   const fileInputRef = useRef(null);
   const [guideLines, setGuideLines] = useState([]);
+  const {name, canvasJSON} = location.state || {};
 
   useEffect(() => {
     if(canvasRef.current) {
@@ -19,7 +26,7 @@ function CanvasPage() {
         height: 500
       });
 
-      let canvasJSON = { version: '6.4.3', objects: [], background: '#ffffff' }
+      // let canvasJSON = { version: '6.4.3', objects: [], background: '#ffffff' }
 
 
       initCanvas.backgroundColor = '#ffffff';
@@ -178,21 +185,31 @@ function CanvasPage() {
     link.click();
   };
 
-  const save = () => {
-    const canvasData = canvas.toJSON();
-    console.log(canvasData);
+  const save = async () => {
+    const canvasState = canvas.toJSON();
+    let canvasData = {
+      name: {name},
+      state: canvasState,
+      time: new Date(Date.now())
+    }
+    await axios.post('/updatecanvas', canvasData);
+  }
+
+  const deleteCanvas = async () => {
+    navigate('/home');
+    await axios.post('/deletecanvas', {name: name});
   }
 
   return (
     <div className="page">
       <div className="mainSec">
         <div className="header">
-          < ArrowBackIosRoundedIcon style={{ color: '#ffffff' }} />
+          < ArrowBackIosRoundedIcon style={{ color: '#ffffff' }} onClick={() => {navigate('/home')}} />
           &nbsp;&nbsp;&nbsp;
           <h1 style={{
             color: "white",
             fontSize: 25
-          }}>Name</h1>
+          }}>{name}</h1>
         </div> <br />
         <canvas id="canvas" ref={canvasRef}></canvas>
         <ToolBar
@@ -205,6 +222,7 @@ function CanvasPage() {
           clear={clearCanvas}
           download={saveCanvasAsImage}
           save={save}
+          deleteCanvas={deleteCanvas}
         />
       </div>
       <Settings canvas={canvas} />
