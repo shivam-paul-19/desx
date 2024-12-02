@@ -6,7 +6,7 @@ import './settings.css';
 
 let copiedObj = null;
 
-function Settings({ canvas }) {
+function Settings({ canvas, changeState }) {
     const [selectedObject, setSelectedObject] = useState(null);
     const [height, setHeight] = useState("");
     const [width, setWidth] = useState("");
@@ -277,6 +277,8 @@ function Settings({ canvas }) {
             }
             canvas.renderAll();
         }
+
+        changeState();
     };
 
     const handleFontSizeChange = (e) => {

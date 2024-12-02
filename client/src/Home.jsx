@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import './home.css';
 import { useLocation } from "react-router-dom";
 import { Button } from "./components/ui/button";
+import Tooltip from '@mui/material/Tooltip';
+import Zoom from '@mui/material/Zoom';
 import {
     Dialog,
     DialogContent,
@@ -18,10 +20,13 @@ import { Label } from "@/components/ui/label"
 
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
+import CanvasList from "./CanvasList";
 
 function Home() {
   let [canvases, setCanvses] = useState([]);
   let [name, SetName] = useState("User");
+  let [canvasAlert, setCanvasAlert] = useState(false);
+
   const getCanvas = async () => {
     let canvasNames = await axios.get('/getcanvas');
     canvases = canvasNames.data;
@@ -44,17 +49,19 @@ function Home() {
   const createNewCanvas = async (event) => {
     event.preventDefault();
     let data = {
-        name: event.target[0].value
+      name: event.target[0].value
     }
     console.log(event.target[0].value);
     let result = await axios.post('/addcanvas', data);
-    if(result) {
+    if(result.data) {
       navigate('/canvas', {
         state: {
           name: event.target[0].value,
           canvasJSON: { version: '6.4.3', objects: [], background: '#ffffff' }
         }
       });
+    } else if(result.data == false) {
+      alert("make a unique name please");
     }
   }
 
@@ -89,9 +96,11 @@ function Home() {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Fab sx={fabStyle} color="primary" aria-label="add">
-            <AddIcon />
-          </Fab>
+          <Tooltip TransitionComponent={Zoom} title="Create new canvas">  
+            <Fab sx={fabStyle} color="primary" aria-label="add">
+              <AddIcon />
+            </Fab>
+          </Tooltip>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <form onSubmit={createNewCanvas}>
@@ -118,20 +127,11 @@ function Home() {
       {/* canvas list */}
       {
         (canvases.length)? (
-          <ul>
-        <li><div className="canvas-label-head"><span>Name</span><span>Last updated</span></div></li>
-        {canvases.map((c) => {
-          let date = new Date(c[1]);
-          date = date.toLocaleString('en-IN');
-          return (
-            <li><div className="canvas-label" onClick={loadCanvas}><span>{c[0]}</span><span>{date}</span></div></li>
-          )
-        })}
-      </ul>
+          <CanvasList canvases={canvases} loadCanvas={loadCanvas}/>
         ) : (
           <div>
             <br />
-            <h1 style={{fontSize: "25px", textAlign: "center"}}><i>No saved canvas</i></h1>
+            <h1 style={{fontSize: "25px", textAlign: "center"}}><i>No saved canvas</i><br /><i>Click on '+' to create your first canvas</i></h1>
           </div>
         )
       }

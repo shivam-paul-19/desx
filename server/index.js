@@ -72,16 +72,23 @@ app.post('/adduser', (req, res) => {
     insertUser(mail, name, pass);
 });
 
-app.post('/addcanvas', (req, res) => {
-    let date = new Date(Date.now());
-    const canvasData = {
-        user: req.signedCookies.uid[0].email,
-        name: req.body.name,
-        last_updated: date,
-        canvas_state: { version: '6.4.3', objects: [], background: '#ffffff' }
+app.post('/addcanvas', async (req, res) => {
+    let name = req.body.name;
+    let user = req.signedCookies.uid[0].email;
+    let canState = await loadCanvas(user, name);
+    if(canState == null) {
+        let date = new Date(Date.now());
+        const canvasData = {
+            name: req.body.name,
+            user: req.signedCookies.uid[0].email,
+            last_updated: date,
+            canvas_state: { version: '6.4.3', objects: [], background: '#ffffff' }
+        }
+        let result = await insertCanvas(canvasData);
+        res.send(true);
+    } else {
+        res.send(false);
     }
-    let result = insertCanvas(canvasData);
-    res.send(result)
 });
 
 app.post('/updatecanvas', async (req, res) => {
@@ -92,6 +99,7 @@ app.post('/updatecanvas', async (req, res) => {
         canvas_state: req.body.state
     }
     await updateCanvas(canvasData.user, canvasData.name, canvasData.canvas_state, canvasData.last_updated);
+    res.send(true);
 });
 
 app.get('/getcanvas', async (req, res) => {

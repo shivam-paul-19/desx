@@ -5,9 +5,26 @@ import './canvaspage.css'
 import Settings from './Settings';
 import { handleObjectMoving, clearGuidelines } from './Snapping';
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 
 function CanvasPage() {
   const location = useLocation();
@@ -15,19 +32,23 @@ function CanvasPage() {
 
   const canvasRef = useRef(null);
   const [canvas, setCanvas] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [isDel, setIsDel] = useState(false);
+  const [isBack, setIsBack] = useState(false);
+  const [isSave, setIsSave] = useState(true);
   const fileInputRef = useRef(null);
   const [guideLines, setGuideLines] = useState([]);
   const {name, canvasJSON} = location.state || {};
 
   useEffect(() => {
     if(canvasRef.current) {
+      setTimeout(() => {
+        setIsSave(true);
+      }, 100);
       const initCanvas = new Canvas(canvasRef.current, {
         width: 1000,
         height: 500
       });
-
-      // let canvasJSON = { version: '6.4.3', objects: [], background: '#ffffff' }
-
 
       initCanvas.backgroundColor = '#ffffff';
       initCanvas.loadFromJSON(canvasJSON);
@@ -37,11 +58,21 @@ function CanvasPage() {
 
       initCanvas.on('object:moving', (event) => {
         handleObjectMoving(initCanvas, event.target, guideLines, setGuideLines);
+        setIsSave(false);
       });
 
       initCanvas.on('object:modified', () => {
         clearCanvas(initCanvas);
+        setIsSave(false);
       });
+
+      initCanvas.on("object:added", () => {
+        setIsSave(false);
+      });
+
+      initCanvas.on("object:removed", () => {
+        setIsSave(false);
+      })
 
       return () => {
         initCanvas.dispose();
@@ -192,7 +223,12 @@ function CanvasPage() {
       state: canvasState,
       time: new Date(Date.now())
     }
-    await axios.post('/updatecanvas', canvasData);
+    let isSaved = await axios.post('/updatecanvas', canvasData);
+    if(isSaved.data) {
+      setOpen(true);
+      setIsSave(true);
+      setTimeout(() => setOpen(false), 5000);
+    }
   }
 
   const deleteCanvas = async () => {
@@ -200,17 +236,39 @@ function CanvasPage() {
     await axios.post('/deletecanvas', {name: name});
   }
 
+  const isSaved = () => {
+    if(!isSave) {
+      setIsBack(true);
+    } else {
+      navigate('/home');
+    }
+  }
+
   return (
     <div className="page">
       <div className="mainSec">
         <div className="header">
-          < ArrowBackIosRoundedIcon style={{ color: '#ffffff' }} onClick={() => {navigate('/home')}} />
+          < ArrowBackIosRoundedIcon style={{ color: '#ffffff' }} onClick={isSaved} />
           &nbsp;&nbsp;&nbsp;
           <h1 style={{
             color: "white",
             fontSize: 25
           }}>{name}</h1>
         </div> <br />
+        <Collapse in={open}>
+          <Alert action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          } severity="success" style={{position: "absolute", bottom: "25px", textAlign: "center"}}>Canvas saved</Alert>
+        </Collapse>
         <canvas id="canvas" ref={canvasRef}></canvas>
         <ToolBar
           addCircle={addCircle}
@@ -222,10 +280,45 @@ function CanvasPage() {
           clear={clearCanvas}
           download={saveCanvasAsImage}
           save={save}
-          deleteCanvas={deleteCanvas}
+          deleteCanvas={() => setIsDel(true)}
         />
       </div>
-      <Settings canvas={canvas} />
+      <Settings canvas={canvas} changeState={() => setIsSave(false)} />
+
+          {/* for deletion */}
+      <AlertDialog open={isDel} onOpenChange={setIsDel}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete the canvas data.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button variant="outline" onClick={() => setIsDel(false)}>Cancel</Button>
+          <Button variant="destructive" onClick={deleteCanvas}>Delete</Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    {/* for saving */}
+    <AlertDialog open={isBack} onOpenChange={setIsBack}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Your changes will be unsaved</AlertDialogTitle>
+          <AlertDialogDescription>
+            Please save your changes before going back.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <Button variant="outline" onClick={() => {navigate('/home')}}>Cancel</Button>
+          <Button onClick={() => {
+            save();
+            navigate('/home');
+          }}>Save</Button>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </div>
   );
 }
