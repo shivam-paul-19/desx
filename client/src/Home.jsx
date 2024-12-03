@@ -1,25 +1,26 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import './home.css';
+import "./home.css";
 import { useLocation } from "react-router-dom";
 import { Button } from "./components/ui/button";
-import Tooltip from '@mui/material/Tooltip';
-import Zoom from '@mui/material/Zoom';
+import Tooltip from "@mui/material/Tooltip";
+import Zoom from "@mui/material/Zoom";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
-import Fab from '@mui/material/Fab';
-import AddIcon from '@mui/icons-material/Add';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import IconButton from '@mui/material/IconButton';
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CanvasList from "./CanvasList";
 
 function Home() {
@@ -28,16 +29,16 @@ function Home() {
   let [canvasAlert, setCanvasAlert] = useState(false);
 
   const getCanvas = async () => {
-    let canvasNames = await axios.get('/getcanvas');
+    let canvasNames = await axios.get("/getcanvas");
     canvases = canvasNames.data;
     console.log(canvases);
     setCanvses(canvases);
-  }
+  };
 
   const getName = async () => {
-    let userName = await axios.get('/getuser');
-    SetName(userName.data);
-  }
+    let userName = await axios.get("/getuser");
+    SetName(userName.data.name);
+  };
 
   useEffect(() => {
     getCanvas();
@@ -49,44 +50,54 @@ function Home() {
   const createNewCanvas = async (event) => {
     event.preventDefault();
     let data = {
-      name: event.target[0].value
-    }
+      name: event.target[0].value,
+    };
     console.log(event.target[0].value);
-    let result = await axios.post('/addcanvas', data);
-    if(result.data) {
-      navigate('/canvas', {
+    let result = await axios.post("/addcanvas", data);
+    if (result.data) {
+      navigate("/canvas", {
         state: {
           name: event.target[0].value,
-          canvasJSON: { version: '6.4.3', objects: [], background: '#ffffff' }
-        }
+          canvasJSON: { version: "6.4.3", objects: [], background: "#ffffff" },
+        },
       });
-    } else if(result.data == false) {
+    } else if (result.data == false) {
       alert("make a unique name please");
     }
-  }
+  };
 
   const loadCanvas = async (event) => {
     let name = event.target.children[0].innerText;
-    let canState = await axios.post('/loadcanvas', {name: name});
+    let canState = await axios.post("/loadcanvas", { name: name });
     console.log(canState.data);
-    navigate('/canvas', {
+    navigate("/canvas", {
       state: {
         name: name,
-        canvasJSON: canState.data
-      }
+        canvasJSON: canState.data,
+      },
     });
-  }
+  };
 
   const fabStyle = {
-    position: 'absolute',
+    position: "absolute",
     bottom: 30,
     right: 30,
   };
 
+  const userStyle = {
+    position: "absolute",
+    right: "30px",
+    top: "30px",
+    color: "white",
+    fontSize: "40px"
+  }
+
   const location = useLocation();
-  // let {name} = location.state || {};
   return (
     <div className="home_page">
+      <Tooltip TransitionComponent={Zoom} title="User account">
+        <AccountCircleIcon sx={userStyle} onClick={() => navigate('/user')}/>
+      </Tooltip>
       <img
         id="home_img"
         src="https://i.ibb.co/RDMkY25/text-logo-color.png"
@@ -96,7 +107,7 @@ function Home() {
 
       <Dialog>
         <DialogTrigger asChild>
-          <Tooltip TransitionComponent={Zoom} title="Create new canvas">  
+          <Tooltip TransitionComponent={Zoom} title="Create new canvas">
             <Fab sx={fabStyle} color="primary" aria-label="add">
               <AddIcon />
             </Fab>
@@ -122,20 +133,21 @@ function Home() {
           </form>
         </DialogContent>
       </Dialog>
-    <br />
-    <hr />
+      <br />
+      <hr />
       {/* canvas list */}
-      {
-        (canvases.length)? (
-          <CanvasList canvases={canvases} loadCanvas={loadCanvas}/>
-        ) : (
-          <div>
+      {canvases.length ? (
+        <CanvasList canvases={canvases} loadCanvas={loadCanvas} />
+      ) : (
+        <div>
+          <br />
+          <h1 style={{ fontSize: "25px", textAlign: "center" }}>
+            <i>No saved canvas</i>
             <br />
-            <h1 style={{fontSize: "25px", textAlign: "center"}}><i>No saved canvas</i><br /><i>Click on '+' to create your first canvas</i></h1>
-          </div>
-        )
-      }
-      
+            <i>Click on '+' to create your first canvas</i>
+          </h1>
+        </div>
+      )}
     </div>
   );
 }

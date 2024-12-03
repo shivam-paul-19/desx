@@ -50,6 +50,14 @@ export const updatePassword = async (mail, pass) => {
     })
 };
 
+export const updateName = async (mail, name) => {
+    let newpass = await User.updateOne({
+        email: mail
+    }, {
+        name: name
+    })
+};
+
 export const updateCanvas = async (user, name, state, time) => {
     let newCanvas = await Canvas.updateOne({
         user: user,

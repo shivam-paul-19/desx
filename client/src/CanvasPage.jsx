@@ -1,17 +1,17 @@
-import { useState, useRef, useEffect } from 'react'
-import { Canvas, Circle, Rect, IText, Line, Image, Triangle } from 'fabric'
-import ToolBar from './ToolBar';
-import './canvaspage.css'
-import Settings from './Settings';
-import { handleObjectMoving, clearGuidelines } from './Snapping';
-import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
-import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
+import { useState, useRef, useEffect } from "react";
+import { Canvas, Circle, Rect, IText, Line, Image, Triangle } from "fabric";
+import ToolBar from "./ToolBar";
+import "./canvaspage.css";
+import Settings from "./Settings";
+import { handleObjectMoving, clearGuidelines } from "./Snapping";
+import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";
+import Alert from "@mui/material/Alert";
+import Collapse from "@mui/material/Collapse";
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 import {
   AlertDialog,
@@ -23,8 +23,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 function CanvasPage() {
   const location = useLocation();
@@ -38,30 +38,30 @@ function CanvasPage() {
   const [isSave, setIsSave] = useState(true);
   const fileInputRef = useRef(null);
   const [guideLines, setGuideLines] = useState([]);
-  const {name, canvasJSON} = location.state || {};
+  const { name, canvasJSON } = location.state || {};
 
   useEffect(() => {
-    if(canvasRef.current) {
+    if (canvasRef.current) {
       setTimeout(() => {
         setIsSave(true);
       }, 100);
       const initCanvas = new Canvas(canvasRef.current, {
         width: 1000,
-        height: 500
+        height: 500,
       });
 
-      initCanvas.backgroundColor = '#ffffff';
+      initCanvas.backgroundColor = "#ffffff";
       initCanvas.loadFromJSON(canvasJSON);
       initCanvas.renderAll();
 
       setCanvas(initCanvas);
 
-      initCanvas.on('object:moving', (event) => {
+      initCanvas.on("object:moving", (event) => {
         handleObjectMoving(initCanvas, event.target, guideLines, setGuideLines);
         setIsSave(false);
       });
 
-      initCanvas.on('object:modified', () => {
+      initCanvas.on("object:modified", () => {
         clearCanvas(initCanvas);
         setIsSave(false);
       });
@@ -72,202 +72,220 @@ function CanvasPage() {
 
       initCanvas.on("object:removed", () => {
         setIsSave(false);
-      })
+      });
 
       return () => {
         initCanvas.dispose();
-      }
+      };
     }
   }, []);
 
   const addRect = () => {
-    if(canvas) {
+    if (canvas) {
       const rect = new Rect({
         top: 100,
         left: 50,
         height: 50,
         width: 100,
         fill: "#041fa4",
-        stroke: '#000000',
-        strokeWidth: 2
+        stroke: "#000000",
+        strokeWidth: 2,
       });
 
       canvas.add(rect);
     }
-  }
+  };
 
   const addCircle = () => {
-    if(canvas) {
+    if (canvas) {
       const cir = new Circle({
         top: 100,
         left: 100,
         radius: 50,
         fill: "#041fa4",
-        stroke: '#000000',
-        strokeWidth: 2
+        stroke: "#000000",
+        strokeWidth: 2,
       });
 
       canvas.add(cir);
     }
-  }
+  };
 
   const addText = () => {
-    if(canvas) {
-      const text = new IText('Text', {
+    if (canvas) {
+      const text = new IText("Text", {
         left: 100,
         top: 100,
         fontSize: 24,
-        fill: 'black',
-        fontFamily: 'Arial',
+        fill: "black",
+        fontFamily: "Arial",
         editable: true,
       });
 
       canvas.add(text);
       canvas.setActiveObject(text);
     }
-  }
+  };
 
   const addLineTool = () => {
-      if (canvas) {
-          let isDrawing = false;
-          let line;
+    if (canvas) {
+      let isDrawing = false;
+      let line;
 
-          canvas.on('mouse:down', (event) => {
-              isDrawing = true;
-              const pointer = canvas.getPointer(event.e);
-              const points = [pointer.x, pointer.y, pointer.x, pointer.y];
+      canvas.on("mouse:down", (event) => {
+        isDrawing = true;
+        const pointer = canvas.getPointer(event.e);
+        const points = [pointer.x, pointer.y, pointer.x, pointer.y];
 
-              line = new Line(points, {
-                  stroke: 'black',       // Line color
-                  strokeWidth: 2,        // Line thickness
-                  selectable: true,      // Allow selection of the line later
-                  originX: 'center',
-                  originY: 'center'
-              });
+        line = new Line(points, {
+          stroke: "black", // Line color
+          strokeWidth: 2, // Line thickness
+          selectable: true, // Allow selection of the line later
+          originX: "center",
+          originY: "center",
+        });
 
-              canvas.add(line);
-          });
+        canvas.add(line);
+      });
 
-          canvas.on('mouse:move', (event) => {
-              if (!isDrawing) return;
-              const pointer = canvas.getPointer(event.e);
-              line.set({ x2: pointer.x, y2: pointer.y });
-              canvas.renderAll();
-          });
+      canvas.on("mouse:move", (event) => {
+        if (!isDrawing) return;
+        const pointer = canvas.getPointer(event.e);
+        line.set({ x2: pointer.x, y2: pointer.y });
+        canvas.renderAll();
+      });
 
-          canvas.on('mouse:up', () => {
-              isDrawing = false;
-              line.setCoords();  // Sets final position and allows interaction
-              canvas.off('mouse:down'); // Disable drawing if needed
-              canvas.off('mouse:move');
-          });
-      }
+      canvas.on("mouse:up", () => {
+        isDrawing = false;
+        line.setCoords(); // Sets final position and allows interaction
+        canvas.off("mouse:down"); // Disable drawing if needed
+        canvas.off("mouse:move");
+      });
+    }
   };
 
   const addImage = (event) => {
     const file = event.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-          const imgURL = e.target.result;
-          let imageEl = document.createElement('img');
-          imageEl.src = imgURL;
-          imageEl.onload = () => {
-            let image = new Image(imageEl);
-            canvas.add(image);
-            canvas.centerObject(image);
-            canvas.setActiveObject(image);
-          }
-        }
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        const imgURL = e.target.result;
+        let imageEl = document.createElement("img");
+        imageEl.src = imgURL;
+        imageEl.onload = () => {
+          let image = new Image(imageEl);
+          canvas.add(image);
+          canvas.centerObject(image);
+          canvas.setActiveObject(image);
+        };
+      };
     }
   };
 
   const addTriangle = () => {
-    if(canvas) {
+    if (canvas) {
       const tri = new Triangle({
         top: 100,
         left: 50,
         height: 100,
         width: 100,
         fill: "#041fa4",
-        stroke: '#000000',
-        strokeWidth: 2
+        stroke: "#000000",
+        strokeWidth: 2,
       });
 
       canvas.add(tri);
     }
-  }
+  };
 
   const clearCanvas = () => {
     if (canvas) {
-      canvas.getObjects().forEach(obj => {
-        canvas.remove(obj);  // Removes all objects from the canvas
+      canvas.getObjects().forEach((obj) => {
+        canvas.remove(obj); // Removes all objects from the canvas
       });
       canvas.renderAll();
     }
-  }
+  };
 
   const saveCanvasAsImage = () => {
-    const dataUrl = canvas.toDataURL({ format: 'png' });
-    const link = document.createElement('a');
+    const dataUrl = canvas.toDataURL({ format: "png" });
+    const link = document.createElement("a");
     link.href = dataUrl;
-    link.download = 'canvas_image.png';
+    link.download = "canvas_image.png";
     link.click();
   };
 
   const save = async () => {
     const canvasState = canvas.toJSON();
     let canvasData = {
-      name: {name},
+      name: { name },
       state: canvasState,
-      time: new Date(Date.now())
-    }
-    let isSaved = await axios.post('/updatecanvas', canvasData);
-    if(isSaved.data) {
+      time: new Date(Date.now()),
+    };
+    let isSaved = await axios.post("/updatecanvas", canvasData);
+    if (isSaved.data) {
       setOpen(true);
       setIsSave(true);
       setTimeout(() => setOpen(false), 5000);
     }
-  }
+  };
 
   const deleteCanvas = async () => {
-    navigate('/home');
-    await axios.post('/deletecanvas', {name: name});
-  }
+    navigate("/home");
+    await axios.post("/deletecanvas", { name: name });
+  };
 
   const isSaved = () => {
-    if(!isSave) {
+    if (!isSave) {
       setIsBack(true);
     } else {
-      navigate('/home');
+      navigate("/home");
     }
-  }
+  };
 
   return (
     <div className="page">
       <div className="mainSec">
         <div className="header">
-          < ArrowBackIosRoundedIcon style={{ color: '#ffffff' }} onClick={isSaved} />
+          <ArrowBackIosRoundedIcon
+            style={{ color: "#ffffff" }}
+            onClick={isSaved}
+          />
           &nbsp;&nbsp;&nbsp;
-          <h1 style={{
-            color: "white",
-            fontSize: 25
-          }}>{name}</h1>
-        </div> <br />
+          <h1
+            style={{
+              color: "white",
+              fontSize: 25,
+            }}
+          >
+            {name}
+          </h1>
+        </div>{" "}
+        <br />
         <Collapse in={open}>
-          <Alert action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setOpen(false);
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          } severity="success" style={{position: "absolute", bottom: "25px", textAlign: "center"}}>Canvas saved</Alert>
+          <Alert
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            severity="success"
+            style={{
+              position: "absolute",
+              bottom: "25px",
+              textAlign: "center",
+            }}
+          >
+            Canvas saved
+          </Alert>
         </Collapse>
         <canvas id="canvas" ref={canvasRef}></canvas>
         <ToolBar
@@ -285,40 +303,56 @@ function CanvasPage() {
       </div>
       <Settings canvas={canvas} changeState={() => setIsSave(false)} />
 
-          {/* for deletion */}
+      {/* for deletion */}
       <AlertDialog open={isDel} onOpenChange={setIsDel}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the canvas data.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <Button variant="outline" onClick={() => setIsDel(false)}>Cancel</Button>
-          <Button variant="destructive" onClick={deleteCanvas}>Delete</Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              canvas data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button variant="outline" onClick={() => setIsDel(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={deleteCanvas}>
+              Delete
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-    {/* for saving */}
-    <AlertDialog open={isBack} onOpenChange={setIsBack}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Your changes will be unsaved</AlertDialogTitle>
-          <AlertDialogDescription>
-            Please save your changes before going back.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <Button variant="outline" onClick={() => {navigate('/home')}}>Cancel</Button>
-          <Button onClick={() => {
-            save();
-            navigate('/home');
-          }}>Save</Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      {/* for saving */}
+      <AlertDialog open={isBack} onOpenChange={setIsBack}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Your changes will be unsaved</AlertDialogTitle>
+            <AlertDialogDescription>
+              Please save your changes before going back.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                navigate("/home");
+              }}
+            >
+              Don't Save
+            </Button>
+            <Button
+              onClick={() => {
+                save();
+                navigate("/home");
+              }}
+            >
+              Save
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

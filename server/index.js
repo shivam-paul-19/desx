@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { sendMail } from './mailing.js';
-import { deleteCanvas, getCanvas, insertCanvas, insertUser, loadCanvas, updateCanvas, updatePassword } from './database.js';
+import { deleteCanvas, getCanvas, insertCanvas, insertUser, loadCanvas, updateCanvas, updateName, updatePassword } from './database.js';
 import { User } from './models/users.js';
 const app = express();
 
@@ -107,12 +107,11 @@ app.get('/getcanvas', async (req, res) => {
     let canvases = await getCanvas(req.signedCookies.uid[0].email);
     canvases.forEach((c) => canNames.push([c.name, c.last_updated]));
     canNames.sort((a, b) => new Date(b[1]) - new Date(a[1]));
-    console.log(canNames);
     res.send(canNames);
 });
 
 app.get('/getuser', (req, res) => {
-    res.send(req.signedCookies.uid[0].name);
+    res.send(req.signedCookies.uid[0]);
 });
 
 app.post('/deletecanvas', async (req, res) => {
@@ -144,10 +143,37 @@ app.post('/forget', (req, res) => {
     res.send(data);
 });
 
-app.post('/update', async (req, res) => {
+app.post('/updatepassword', async (req, res) => {
     console.log(req.body);
     await updatePassword(req.body.mail, req.body.newPass);
     console.log("password updated");
+    let user = [{
+        email: req.signedCookies.uid[0].email,
+        name: req.signedCookies.uid[0].name,
+        password: req.body.newPass
+    }];
+    res.clearCookie("uid");
+    res.cookie("uid", user, {
+        expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
+        signed: true
+    });
+    res.send("updated");
+});
+
+app.post('/updatename', async (req, res) => {
+    console.log(req.body);
+    await updateName(req.body.mail, req.body.newName);
+    console.log("name updated");
+    let user = [{
+        email: req.signedCookies.uid[0].email,
+        name: req.body.newName,
+        password: req.signedCookies.uid[0].password
+    }];
+    res.clearCookie("uid");
+    res.cookie("uid", user, {
+        expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
+        signed: true
+    });
     res.send("updated");
 });
 
@@ -157,13 +183,18 @@ app.get('/isuser', async (req, res) => {
     } else {
         res.send(false);
     }
+});
+
+app.get('/logout', (req, res) => {
+    res.clearCookie("uid");
+    res.send("cookies deleted");
 })
 
 // email and password
 app.post('/login', async (req, res) => {
     let user = await User.find({
         email: req.body.email
-    })
+    });
 
     if(user.length == 0) {
         res.send("no");

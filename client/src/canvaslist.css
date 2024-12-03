@@ -30,7 +30,7 @@
 }
 
 .canvas_list {
-    height: 270px;
+    height: 250px;
     padding: 0 20px;
     overflow-y: scroll;
 }

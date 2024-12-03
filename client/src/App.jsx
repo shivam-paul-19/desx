@@ -4,6 +4,7 @@ import Home from './Home';
 import LandingPage from './LandingPage';
 import Validate from './Validation';
 import SetPass from './setPass';
+import UserPage from './User';
 
 function App() {
   const router = createBrowserRouter([
@@ -26,6 +27,10 @@ function App() {
     {
       path: '/password',
       element: <SetPass />
+    },
+    {
+      path: '/user',
+      element: <UserPage />
     }
   ])
   return (

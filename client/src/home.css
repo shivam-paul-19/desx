@@ -7,3 +7,10 @@
 #home_img {
     height: 100px;
 }
+
+.user {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    background-color: yellow;
+}

@@ -48,7 +48,7 @@ function SetPass() {
             mail: mail,
             newPass: event.target[0].value
         }
-        let res = await axios.post('/update', data);
+        let res = await axios.post('/updatepassword', data);
         if(res.data == "updated") {
             setIsOpen(true);
         }

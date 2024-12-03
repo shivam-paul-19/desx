@@ -8,6 +8,7 @@ export default defineConfig({
     proxy: {
       '/create': 'http://localhost:8080',
       '/login': 'http://localhost:8080',
+      '/logout': 'http://localhost:8080',
       '/forget': 'http://localhost:8080',
       '/adduser': 'http://localhost:8080',
       '/isuser': 'http://localhost:8080',
@@ -17,7 +18,8 @@ export default defineConfig({
       '/loadcanvas': 'http://localhost:8080',
       '/getuser': 'http://localhost:8080',
       '/deletecanvas': 'http://localhost:8080',
-      '/update': 'http://localhost:8080'
+      '/updatepassword': 'http://localhost:8080',
+      '/updatename': 'http://localhost:8080',
     }
   },
   plugins: [react()],

@@ -98,11 +98,7 @@ function LandingPage() {
     let res = await axios.post("/login", formData);
     if (res.data[0] == "auth") {
       console.log("correct password");
-      navigate("/home", {
-        state: {
-          name: res.data[1],
-        },
-      });
+      navigate("/home");
     } else if ((res.data = "no-auth")) {
       console.log("wrong password");
       window.alert("wrong password");
