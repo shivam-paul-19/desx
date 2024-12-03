@@ -71,7 +71,6 @@ function LandingPage() {
     };
 
     let data = await axios.post("/create", formData);
-    console.log(data.data);
     if (data.data) {
       navigate("/validate", {
         state: {
@@ -96,13 +95,15 @@ function LandingPage() {
     };
 
     let res = await axios.post("/login", formData);
+    console.log(res.data);
     if (res.data[0] == "auth") {
+      console.log("it is executing 2");
       console.log("correct password");
       navigate("/home");
-    } else if ((res.data = "no-auth")) {
+    } else if (res.data == "no-auth") {
       console.log("wrong password");
       window.alert("wrong password");
-    } else {
+    } else if (res.data == "no") {
       window.alert("Account not found");
     }
   };
@@ -275,7 +276,12 @@ function LandingPage() {
                   <Label htmlFor="email" className="text-right">
                     Email
                   </Label>
-                  <Input id="email" defaultValue="" className="col-span-3" required/>
+                  <Input
+                    id="email"
+                    defaultValue=""
+                    className="col-span-3"
+                    required
+                  />
                 </div>
               </div>
               <DialogFooter>

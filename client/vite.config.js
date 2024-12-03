@@ -20,6 +20,7 @@ export default defineConfig({
       '/deletecanvas': 'http://localhost:8080',
       '/updatepassword': 'http://localhost:8080',
       '/updatename': 'http://localhost:8080',
+      '/deleteuser': 'http://localhost:8080',
     }
   },
   plugins: [react()],

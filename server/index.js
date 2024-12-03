@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { sendMail } from './mailing.js';
-import { deleteCanvas, getCanvas, insertCanvas, insertUser, loadCanvas, updateCanvas, updateName, updatePassword } from './database.js';
+import { deleteAll, deleteCanvas, getCanvas, insertCanvas, insertUser, loadCanvas, updateCanvas, updateName, updatePassword } from './database.js';
 import { User } from './models/users.js';
 const app = express();
 
@@ -35,7 +35,7 @@ main()
 .catch(err => console.log(err));
 
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/desx');
+  await mongoose.connect(process.env.MONGO_URL);
 }
 
 // name, email and password
@@ -188,7 +188,15 @@ app.get('/isuser', async (req, res) => {
 app.get('/logout', (req, res) => {
     res.clearCookie("uid");
     res.send("cookies deleted");
-})
+});
+
+app.get('/deleteuser', async (req, res) => {
+    let user = req.signedCookies.uid[0].email;
+    res.clearCookie("uid");
+    await deleteAll(req.body.user);
+    console.log(`${user} account deleted`);
+    res.send("deleted");
+});
 
 // email and password
 app.post('/login', async (req, res) => {
@@ -197,6 +205,7 @@ app.post('/login', async (req, res) => {
     });
 
     if(user.length == 0) {
+        console.log("user not found");
         res.send("no");
     } else {
         let pass = req.body.password;
