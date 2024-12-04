@@ -5,6 +5,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { sendMail } from './mailing.js';
 import path from "path";
+import { fileURLToPath } from 'url';
 import { deleteAll, deleteCanvas, getCanvas, insertCanvas, insertUser, loadCanvas, updateCanvas, updateName, updatePassword } from './database.js';
 import { User } from './models/users.js';
 const app = express();
