@@ -161,7 +161,11 @@ app.post('/updatepassword', async (req, res) => {
         res.clearCookie("uid");
         res.cookie("uid", user, {
             expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
-            signed: true
+            signed: true,
+            domain: ".onrender.com", // Set the domain so it's accessible across subdomains
+            httpOnly: true, // Set cookie as HttpOnly to prevent JavaScript access (for security)
+            secure: true, // Ensure it's sent over HTTPS
+            path: '/'
         });
         res.send("updated");
     } else {
