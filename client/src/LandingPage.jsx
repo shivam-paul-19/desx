@@ -41,7 +41,7 @@ function LandingPage() {
 
   const check = async () => {
     try {
-      const checkUser = await axios.get("/isuser");
+      const checkUser = await axios.get(`${BASE_URL}/isuser`);
       if (checkUser.data) {
         navigate("/home", {
           state: {
@@ -125,7 +125,7 @@ function LandingPage() {
       password: event.target[1].value,
     };
 
-    let res = await axios.post("/login", formData);
+    let res = await axios.post(`${BASE_URL}/login`, formData);
     if (res.data == "auth") {
       navigate("/home");
     } else if (res.data == "no-auth") {
