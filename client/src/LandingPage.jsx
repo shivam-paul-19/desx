@@ -30,8 +30,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 function LandingPage() {
   const navigate = useNavigate();
+
+  const axiosInstance = axios.create({
+    baseURL: BASE_URL, 
+  });
 
   const check = async () => {
     try {
