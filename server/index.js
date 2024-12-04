@@ -49,6 +49,14 @@ async function main() {
   await mongoose.connect(process.env.MONGO_URL);
 }
 
+app.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://desx.onrender.com");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.send();
+});
+
 // name, email and password
 app.post('/create', async (req, res) => {
     let user = await User.find({
@@ -227,7 +235,12 @@ app.post('/login', async (req, res) => {
         if(pass === pass_db) {
             res.cookie("uid", user, {
                 expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
-                signed: true
+                signed: true,
+                domain: ".onrender.com", // Set the domain so it's accessible across subdomains
+                httpOnly: true, // Set cookie as HttpOnly to prevent JavaScript access (for security)
+                secure: true, // Ensure it's sent over HTTPS
+                path: '/',
+                sameSite: 'none'
             });
             console.log("cookies sent");
             res.send("auth");
