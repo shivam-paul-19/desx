@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { sendMail } from './mailing.js';
-import cors from "cors";
+import {cors} from "cors";
 import { deleteAll, deleteCanvas, getCanvas, insertCanvas, insertUser, loadCanvas, updateCanvas, updateName, updatePassword } from './database.js';
 import { User } from './models/users.js';
 const app = express();
@@ -14,19 +14,22 @@ const port = 8080;
 dotenv.config();
 
 app.use(cors({
-    origin: "*"
+    origin: "https://desx.onrender.com",
+    methods: ["GET", "POST"]
 }));
 
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET_CODE));
-app.use(session({
+app.use(
+  session({
     secret: "secrerstring",
     resave: false,
     saveUninitialized: true,
     cookie: {
-        httpOnly: true,
-    }
-}));
+      httpOnly: true,
+    },
+  })
+);
 
 app.listen(port, (req, res) => {
     console.log(`Server listening to port ${port}`);
