@@ -34,19 +34,21 @@ import AddIcon from "@mui/icons-material/Add";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CanvasList from "./CanvasList";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 function Home() {
   let [canvases, setCanvses] = useState([]);
   let [name, SetName] = useState("User");
   let [canvasAlert, setCanvasAlert] = useState(false);
 
   const getCanvas = async () => {
-    let canvasNames = await axios.get("/getcanvas");
+    let canvasNames = await axios.get(`${BASE_URL}/getcanvas`);
     canvases = canvasNames.data;
     setCanvses(canvases);
   };
 
   const getName = async () => {
-    let userName = await axios.get("/getuser");
+    let userName = await axios.get(`${BASE_URL}/getuser`);
     SetName(userName.data.name);
   };
 
@@ -62,7 +64,7 @@ function Home() {
     let data = {
       name: event.target[0].value,
     };
-    let result = await axios.post("/addcanvas", data);
+    let result = await axios.post(`${BASE_URL}/addcanvas`, data);
     if (result.data) {
       navigate("/canvas", {
         state: {
@@ -77,7 +79,7 @@ function Home() {
 
   const loadCanvas = async (event) => {
     let name = event.target.children[0].innerText;
-    let canState = await axios.post("/loadcanvas", { name: name });
+    let canState = await axios.post(`${BASE_URL}/loadcanvas`, { name: name });
     navigate("/canvas", {
       state: {
         name: name,
