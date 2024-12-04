@@ -4,8 +4,6 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { sendMail } from './mailing.js';
-import path from "path";
-import { fileURLToPath } from 'url';
 import { deleteAll, deleteCanvas, getCanvas, insertCanvas, insertUser, loadCanvas, updateCanvas, updateName, updatePassword } from './database.js';
 import { User } from './models/users.js';
 const app = express();
@@ -13,14 +11,6 @@ const app = express();
 const port = 8080;
 
 dotenv.config();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-app.use(express.static(path.join(__dirname, 'dist')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
 
 app.use(express.json());
 app.use(cookieParser(process.env.COOKIE_SECRET_CODE));
