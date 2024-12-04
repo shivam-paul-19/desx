@@ -45,7 +45,6 @@ app.post('/create', async (req, res) => {
     })
 
     if(user.length > 0) {
-        console.log("account already exists");
         res.send(false);
     } else {
         let otp = Math.floor(100000 + Math.random() * 900000);
@@ -84,7 +83,7 @@ app.post('/addcanvas', async (req, res) => {
             last_updated: date,
             canvas_state: { version: '6.4.3', objects: [], background: '#ffffff' }
         }
-        let result = await insertCanvas(canvasData);
+        await insertCanvas(canvasData);
         res.send(true);
     } else {
         res.send(false);
@@ -124,7 +123,6 @@ app.post('/loadcanvas', async (req, res) => {
     let name = req.body.name;
     let user = req.signedCookies.uid[0].email;
     let canState = await loadCanvas(user, name);
-    console.log(canState.canvas_state);
     res.send(canState.canvas_state);
 });
 
@@ -144,26 +142,26 @@ app.post('/forget', (req, res) => {
 });
 
 app.post('/updatepassword', async (req, res) => {
-    console.log(req.body);
     await updatePassword(req.body.mail, req.body.newPass);
-    console.log("password updated");
-    let user = [{
-        email: req.signedCookies.uid[0].email,
-        name: req.signedCookies.uid[0].name,
-        password: req.body.newPass
-    }];
-    res.clearCookie("uid");
-    res.cookie("uid", user, {
-        expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
-        signed: true
-    });
-    res.send("updated");
+    if(req.body.isLog) {
+        let user = [{
+            email: req.body.mail,
+            name: req.signedCookies.uid[0].name,
+            password: req.body.newPass
+        }];
+        res.clearCookie("uid");
+        res.cookie("uid", user, {
+            expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
+            signed: true
+        });
+        res.send("updated");
+    } else {
+        res.send("updated");
+    }
 });
 
-app.post('/updatename', async (req, res) => {
-    console.log(req.body);
+app.post('/updatename', async (req, res) => {;
     await updateName(req.body.mail, req.body.newName);
-    console.log("name updated");
     let user = [{
         email: req.signedCookies.uid[0].email,
         name: req.body.newName,
@@ -193,7 +191,7 @@ app.get('/logout', (req, res) => {
 app.get('/deleteuser', async (req, res) => {
     let user = req.signedCookies.uid[0].email;
     res.clearCookie("uid");
-    await deleteAll(req.body.user);
+    await deleteAll(user);
     console.log(`${user} account deleted`);
     res.send("deleted");
 });
@@ -205,19 +203,17 @@ app.post('/login', async (req, res) => {
     });
 
     if(user.length == 0) {
-        console.log("user not found");
         res.send("no");
     } else {
         let pass = req.body.password;
         let pass_db = user[0].password;
 
         if(pass === pass_db) {
-            console.log('approved!');
             res.cookie("uid", user, {
                 expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
                 signed: true
             });
-            res.send(["auth", user[0].name]);
+            res.send("auth");
         } else {
             res.send("no-auth");
         }

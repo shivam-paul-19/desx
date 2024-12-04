@@ -27,6 +27,7 @@ function Validate() {
     const location = useLocation();
     let {name, mail, otp, is_forget, pass} = location.state || {};
     let [isOpen, setIsOpen] = useState(false);
+    let [wrongOTP, setWrongOTP] = useState(false);
 
     const checkOTP = async (event) => {
         event.preventDefault();
@@ -51,8 +52,7 @@ function Validate() {
             }
         } else {
             console.log("OTP don't match");
-            window.alert("Wrong OTP");
-            navigate('/');
+            setWrongOTP(true);
         }
     };
 
@@ -94,6 +94,27 @@ function Validate() {
               <Button onClick={
                 () => {navigate('/')}
               }>Continue</Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Wrong OTP */}
+        <AlertDialog open={wrongOTP} onOpenChange={setWrongOTP}>
+          <AlertDialogTrigger></AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Wrong OTP</AlertDialogTitle>
+              <AlertDialogDescription>
+                the OTP you have entered doesn't match
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <Button variant="outline" onClick={
+                () => {navigate('/')}
+              }>Go back to main page</Button>
+              <Button onClick={
+                () => {setWrongOTP(false)}
+              }>Enter again</Button>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

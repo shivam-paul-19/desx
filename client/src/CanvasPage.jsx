@@ -309,8 +309,8 @@ function CanvasPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              canvas data.
+              This action cannot be undone. This will permanently delete the whole 
+              canvas and canvas data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

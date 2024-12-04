@@ -44,7 +44,6 @@ function UserPage() {
 
   const getUserData = async () => {
     let userdata = await axios.get("/getuser");
-    console.log(userdata.data);
     setEmail(userdata.data.email);
     setName(userdata.data.name);
     setPass(userdata.data.password);
@@ -80,6 +79,7 @@ function UserPage() {
     let data = {
       mail: email,
       newPass: event.target[0].value,
+      isLog: true
     };
     setPassChange(!passChange);
     await axios.post("/updatepassword", data);
@@ -204,7 +204,7 @@ function UserPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Want to log out?</AlertDialogTitle>
             <AlertDialogDescription>
-              Once logged out, you have to login again with yout credentials
+              Once logged out, you have to login again with your credentials
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -15,6 +15,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import IconButton from '@mui/material/IconButton';
@@ -31,7 +42,6 @@ function Home() {
   const getCanvas = async () => {
     let canvasNames = await axios.get("/getcanvas");
     canvases = canvasNames.data;
-    console.log(canvases);
     setCanvses(canvases);
   };
 
@@ -52,7 +62,6 @@ function Home() {
     let data = {
       name: event.target[0].value,
     };
-    console.log(event.target[0].value);
     let result = await axios.post("/addcanvas", data);
     if (result.data) {
       navigate("/canvas", {
@@ -62,14 +71,13 @@ function Home() {
         },
       });
     } else if (result.data == false) {
-      alert("make a unique name please");
+      setCanvasAlert(true);
     }
   };
 
   const loadCanvas = async (event) => {
     let name = event.target.children[0].innerText;
     let canState = await axios.post("/loadcanvas", { name: name });
-    console.log(canState.data);
     navigate("/canvas", {
       state: {
         name: name,
@@ -96,7 +104,7 @@ function Home() {
   return (
     <div className="home_page">
       <Tooltip TransitionComponent={Zoom} title="User account">
-        <AccountCircleIcon sx={userStyle} onClick={() => navigate('/user')}/>
+        <AccountCircleIcon sx={userStyle} onClick={() => navigate("/user")} />
       </Tooltip>
       <img
         id="home_img"
@@ -148,6 +156,23 @@ function Home() {
           </h1>
         </div>
       )}
+
+      {/* unique name alert */}
+      <AlertDialog open={canvasAlert} onOpenChange={setCanvasAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Create a unique name</AlertDialogTitle>
+            <AlertDialogDescription>
+              A file with this name already exists, kindly set a unique name.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button onClick={() => setCanvasAlert(false)}>
+              OK
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

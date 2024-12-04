@@ -16,6 +16,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -24,11 +35,8 @@ function LandingPage() {
 
   const check = async () => {
     try {
-      console.log("it is executing");
       const checkUser = await axios.get("/isuser");
       if (checkUser.data) {
-        console.log("user has found");
-        console.log(checkUser.data[0].name);
         navigate("/home", {
           state: {
             name: checkUser.data[0].name,
@@ -47,6 +55,10 @@ function LandingPage() {
   let [forget, setForget] = useState(false);
   let [eyeOpen, setEyeOpen] = useState(true);
   let [hide, setHide] = useState("password");
+  let [notFound, setNotFound] = useState(false);
+  let [validMail, setValidMail] = useState(false);
+  let [isExist, setIsExist] = useState(false);
+  let [wrongPassword, setWrongPass] = useState(false);
 
   const toggleEye = () => {
     setEyeOpen(!eyeOpen);
@@ -62,6 +74,15 @@ function LandingPage() {
     toggleEye();
   };
 
+  const validateEmail = (mail) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if(emailRegex.test(mail)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   const getSignindetails = async (event) => {
     event.preventDefault();
     let formData = {
@@ -70,19 +91,23 @@ function LandingPage() {
       password: event.target[2].value,
     };
 
-    let data = await axios.post("/create", formData);
-    if (data.data) {
-      navigate("/validate", {
-        state: {
-          name: data.data.name,
-          mail: data.data.mail,
-          otp: data.data.otp,
-          is_forget: data.data.is_forget,
-          pass: data.data.pass,
-        },
-      });
+    if(!validateEmail(formData.email)) {
+      setValidMail(true);
     } else {
-      window.alert("Account already exists, try to log in");
+      let data = await axios.post("/create", formData);
+      if (data.data) {
+        navigate("/validate", {
+          state: {
+            name: data.data.name,
+            mail: data.data.mail,
+            otp: data.data.otp,
+            is_forget: data.data.is_forget,
+            pass: data.data.pass,
+          },
+        });
+      } else {
+        setIsExist(true);
+      }
     }
   };
 
@@ -95,16 +120,12 @@ function LandingPage() {
     };
 
     let res = await axios.post("/login", formData);
-    console.log(res.data);
-    if (res.data[0] == "auth") {
-      console.log("it is executing 2");
-      console.log("correct password");
+    if (res.data == "auth") {
       navigate("/home");
     } else if (res.data == "no-auth") {
-      console.log("wrong password");
-      window.alert("wrong password");
+      setWrongPass(true);
     } else if (res.data == "no") {
-      window.alert("Account not found");
+      setNotFound(true);
     }
   };
 
@@ -114,15 +135,19 @@ function LandingPage() {
       mail: event.target[0].value,
     };
 
-    let res = await axios.post("/forget", data);
-    console.log(res.data);
-    navigate("/validate", {
-      state: {
-        mail: res.data.mail,
-        otp: res.data.otp,
-        is_forget: res.data.is_forget,
-      },
-    });
+    if(!validateEmail(data.mail)) {
+      setValidMail(true);
+    } else {
+      let res = await axios.post("/forget", data);
+      navigate("/validate", {
+        state: {
+          mail: res.data.mail,
+          otp: res.data.otp,
+          is_forget: res.data.is_forget,
+        },
+      });
+    }
+
   };
 
   return (
@@ -241,7 +266,7 @@ function LandingPage() {
                     setForget(true);
                   }}
                 >
-                  Forget password?
+                  Forgot password?
                 </Button>
                 <Button type="submit">Submit</Button>
               </DialogFooter>
@@ -290,6 +315,77 @@ function LandingPage() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* account not found */}
+        <AlertDialog open={notFound} onOpenChange={setNotFound}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Account not found</AlertDialogTitle>
+            <AlertDialogDescription>
+              There is not user with this email.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button onClick={() => setNotFound(false)}>
+              OK
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+        {/* invalid email */}
+        <AlertDialog open={validMail} onOpenChange={setValidMail}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Invalid email</AlertDialogTitle>
+            <AlertDialogDescription>
+              kindly enter a valid email
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button onClick={() => setValidMail(false)}>
+              OK
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+        {/* user exists */}
+        <AlertDialog open={isExist} onOpenChange={setIsExist}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>User already exists</AlertDialogTitle>
+            <AlertDialogDescription>
+              An account already exists with this mail you have entered, try to login with your credentials.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button onClick={() => setIsExist(false)}>
+              OK
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+        {/* user exists */}
+        <AlertDialog open={wrongPassword} onOpenChange={setWrongPass}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Wrong Password</AlertDialogTitle>
+            <AlertDialogDescription>
+              The password you have entered is wrong, you reset is by clicking on 'Forgot password'
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button variant="outline" onClick={() => setWrongPass(false)}>
+              OK
+            </Button>
+            <Button onClick={() => {setForget(true);}}>
+              Forgot Password?
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       </div>
     </div>
   );

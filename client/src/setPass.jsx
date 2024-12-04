@@ -5,8 +5,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import axios from "axios";
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { useNavigation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
     AlertDialog,
@@ -22,7 +21,7 @@ import {
 
 function SetPass() {
     const location = useLocation();
-    const navigate = useNavigation();
+    const navigate = useNavigate();
     let [eyeOpen, setEyeOpen] = useState(true);
     let [hide, setHide] = useState("password");
     let [isOpen, setIsOpen] = useState(false);
@@ -81,7 +80,7 @@ function SetPass() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <Button onClick={
-                () => {navigate('/')}
+                () => {navigate("/")}
               }>Continue</Button>
             </AlertDialogFooter>
           </AlertDialogContent>
