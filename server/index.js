@@ -15,7 +15,8 @@ dotenv.config();
 
 app.use(cors({
     origin: "https://desx.onrender.com",
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    credentials: true
 }));
 
 app.use(express.json());
