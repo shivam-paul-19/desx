@@ -45,7 +45,8 @@ function Home() {
     let canvasNames = await axios.get(`${BASE_URL}/getcanvas`, {
       withCredentials: true,
       headers: {
-        'Content-Type': 'application/json'
+        'Access-Control-Allow-Origin': 'https://desx.onrender.com',
+        'Access-Control-Allow-Method': 'GET'
       }
     });
     canvases = canvasNames.data;
@@ -56,7 +57,8 @@ function Home() {
     let userName = await axios.get(`${BASE_URL}/getuser`, {
       withCredentials: true,
       headers: {
-        'Content-Type': 'application/json'
+        'Access-Control-Allow-Origin': 'https://desx.onrender.com',
+        'Access-Control-Allow-Method': 'GET'
       }
     });
     SetName(userName.data.name);
