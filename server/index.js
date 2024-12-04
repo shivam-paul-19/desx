@@ -16,7 +16,8 @@ dotenv.config();
 app.use(cors({
     origin: "https://desx.onrender.com",
     methods: ["GET", "POST"],
-    credentials: true
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -28,6 +29,7 @@ app.use(
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
+      sameSite: 'none'
     },
   })
 );
@@ -165,7 +167,8 @@ app.post('/updatepassword', async (req, res) => {
             domain: ".onrender.com", // Set the domain so it's accessible across subdomains
             httpOnly: true, // Set cookie as HttpOnly to prevent JavaScript access (for security)
             secure: true, // Ensure it's sent over HTTPS
-            path: '/'
+            path: '/',
+            sameSite: 'none'
         });
         res.send("updated");
     } else {
