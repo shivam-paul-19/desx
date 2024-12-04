@@ -221,6 +221,7 @@ app.post('/login', async (req, res) => {
                 expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
                 signed: true
             });
+            console.log("cookies sent");
             res.send("auth");
         } else {
             res.send("no-auth");
