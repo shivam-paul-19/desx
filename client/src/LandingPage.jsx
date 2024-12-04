@@ -125,7 +125,7 @@ function LandingPage() {
       password: event.target[1].value,
     };
 
-    let res = await axios.post(`${BASE_URL}/login`, formData);
+    let res = await axios.post(`${BASE_URL}/login`, formData, {withCredentials: true});
     if (res.data == "auth") {
       navigate("/home");
     } else if (res.data == "no-auth") {
