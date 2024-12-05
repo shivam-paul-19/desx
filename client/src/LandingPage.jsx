@@ -42,10 +42,12 @@ function LandingPage() {
         withCredentials: true
       });
       console.log("landing page: ",checkUser.data);
+      console.log(checkUser.data.name);
+      console.log(checkUser.data.islog);
       if (checkUser.data) {
         navigate("/home", {
           state: {
-            name: checkUser.data[0].name,
+            name: checkUser.data.name,
           },
         });
       }
