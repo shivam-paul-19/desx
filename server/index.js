@@ -158,7 +158,8 @@ app.post('/updatepassword', async (req, res) => {
         let user = [{
             email: req.body.mail,
             name: req.cookies.uid[0].name,
-            password: req.body.newPass
+            password: req.body.newPass,
+            islog: true
         }];
         res.clearCookie("uid");
         res.cookie("uid", user, {
@@ -178,7 +179,8 @@ app.post('/updatename', async (req, res) => {;
     let user = [{
         email: req.cookies.uid[0].email,
         name: req.body.newName,
-        password: req.cookies.uid[0].password
+        password: req.cookies.uid[0].password,
+        islog: true
     }];
     res.clearCookie("uid");
     res.cookie("uid", user, {
@@ -192,7 +194,9 @@ app.post('/updatename', async (req, res) => {;
 
 app.get('/isuser', (req, res) => {
     if(req.cookies.uid) {
-        res.send(req.cookies.uid);
+        let userData = req.cookies.uid[0];
+        let isLogged = userData.islog;
+        res.send(isLogged);
     } else {
         res.send(false);
     }
@@ -205,6 +209,20 @@ app.get("/getcookie", (req, res) => {
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.clearCookie("uid");
+    let user = [
+        {
+            name: userData[0].name,
+            password: userData[0].password,
+            email: userData[0].email,
+            islog: false
+        }
+    ]
+    res.cookie("uid", user, {
+        httpOnly: true,  
+        secure: true,  
+        expires: new Date(Date.now() + 1000 * 3600 * 24 * 30), // 30 days
+        sameSite: 'None' 
+    })
     res.send("cookies deleted");
 });
 
@@ -212,20 +230,42 @@ app.get('/deleteuser', async (req, res) => {
     let user = req.cookies.uid[0].email;
     res.clearCookie("uid");
     let result = await deleteAll(user);
-    console.log(`${result}`);
+    user = [
+        {
+            name: userData[0].name,
+            password: userData[0].password,
+            email: userData[0].email,
+            islog: false
+        }
+    ]
+    res.cookie("uid", user, {
+        httpOnly: true,  
+        secure: true,  
+        expires: new Date(Date.now() + 1000 * 3600 * 24 * 30), // 30 days
+        sameSite: 'None' 
+    })
     req.session.destroy();
     res.send("deleted");
 });
 
 // email and password
 app.post('/login', async (req, res) => {
-    let user = await User.find({
+    let userData = await User.find({
         email: req.body.email
     });
 
-    if(user.length == 0) {
+    if(userData.length == 0) {
         res.send("no");
     } else {
+        let user = [
+            {
+                name: userData[0].name,
+                password: userData[0].password,
+                email: userData[0].email,
+                islog: true
+            }
+        ]
+
         let pass = req.body.password;
         let pass_db = user[0].password;
 
