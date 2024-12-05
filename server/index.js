@@ -207,7 +207,7 @@ app.get("/getcookie", (req, res) => {
 
 app.get('/logout', (req, res) => {
     req.session.destroy();
-    res.clearCookie("uid");
+    let userData = req.cookies.uid;
     let user = [
         {
             name: userData[0].name,
@@ -216,6 +216,7 @@ app.get('/logout', (req, res) => {
             islog: false
         }
     ]
+    res.clearCookie("uid");
     res.cookie("uid", user, {
         httpOnly: true,  
         secure: true,  
@@ -227,8 +228,8 @@ app.get('/logout', (req, res) => {
 
 app.get('/deleteuser', async (req, res) => {
     let user = req.cookies.uid[0].email;
-    res.clearCookie("uid");
     let result = await deleteAll(user);
+    let userData = req.cookies.uid;
     user = [
         {
             name: userData[0].name,
@@ -237,6 +238,7 @@ app.get('/deleteuser', async (req, res) => {
             islog: false
         }
     ]
+    res.clearCookie("uid");
     res.cookie("uid", user, {
         httpOnly: true,  
         secure: true,  

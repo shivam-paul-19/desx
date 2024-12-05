@@ -41,7 +41,7 @@ function LandingPage() {
       const checkUser = await axios.get(`${BASE_URL}/isuser`, {
         withCredentials: true
       });
-      console.log("landing page: ",checkUser.data[0].islog);
+      console.log("landing page: ",checkUser.data);
       if (checkUser.data) {
         navigate("/home", {
           state: {
