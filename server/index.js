@@ -195,8 +195,7 @@ app.post('/updatename', async (req, res) => {;
 app.get('/isuser', (req, res) => {
     if(req.cookies.uid) {
         let userData = req.cookies.uid[0];
-        let isLogged = userData.islog;
-        res.send(isLogged);
+        res.send(userData);
     } else {
         res.send(false);
     }
