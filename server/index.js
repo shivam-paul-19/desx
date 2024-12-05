@@ -127,14 +127,17 @@ app.get('/getuser', (req, res) => {
 app.post('/deletecanvas', async (req, res) => {
     let name = req.body.name;
     let user = req.cookies.uid[0].email;
-    await deleteCanvas(user, name);
+    let response = await deleteCanvas(user, name);
+    res.send(response);
 });
 
 app.post('/loadcanvas', async (req, res) => {
     let name = req.body.name;
     let user = req.cookies.uid[0].email;
     let canState = await loadCanvas(user, name);
-    res.send(canState.canvas_state);
+    if(canState) {
+        res.send(canState.canvas_state);
+    }
 });
 
 // forget password mailing route

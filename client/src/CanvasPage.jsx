@@ -236,10 +236,10 @@ function CanvasPage() {
   };
 
   const deleteCanvas = async () => {
-    navigate("/home");
-    await axios.post(`${BASE_URL}/deletecanvas`, { name: name }, {
+    let res = await axios.post(`${BASE_URL}/deletecanvas`, { name: name }, {
       withCredentials: true
     });
+    navigate("/home");
   };
 
   const isSaved = () => {
