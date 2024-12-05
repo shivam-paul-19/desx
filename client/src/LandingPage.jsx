@@ -30,18 +30,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = "https://desx-server.onrender.com";
 
 function LandingPage() {
   const navigate = useNavigate();
 
-  // const axiosInstance = axios.create({
-  //   baseURL: BASE_URL, 
-  // });
 
   const check = async () => {
     try {
-      const checkUser = await axios.get(`${BASE_URL}/isuser`);
+      const checkUser = await axios.get(`${BASE_URL}/isuser`, {
+        withCredentials: true
+      });
       if (checkUser.data) {
         navigate("/home", {
           state: {
@@ -100,7 +99,9 @@ function LandingPage() {
     if(!validateEmail(formData.email)) {
       setValidMail(true);
     } else {
-      let data = await axios.post("/create", formData);
+      let data = await axios.post(`${BASE_URL}/create`, formData, {
+        withCredentials: true
+      });
       if (data.data) {
         navigate("/validate", {
           state: {
@@ -125,13 +126,7 @@ function LandingPage() {
       password: event.target[1].value,
     };
 
-    let res = await axios.post(`${BASE_URL}/login`, formData, {
-      withCredentials: true,
-      headers: {
-        'Access-Control-Allow-Origin': 'https://desx.onrender.com',
-        'Access-Control-Allow-Method': 'POST'
-      }
-    });
+    let res = await axios.post(`${BASE_URL}/login`, formData, { withCredentials: true });
     if (res.data == "auth") {
       navigate("/home");
     } else if (res.data == "no-auth") {
@@ -150,7 +145,9 @@ function LandingPage() {
     if(!validateEmail(data.mail)) {
       setValidMail(true);
     } else {
-      let res = await axios.post("/forget", data);
+      let res = await axios.post(`${BASE_URL}/forget`, data, {
+        withCredentials: true
+      });
       navigate("/validate", {
         state: {
           mail: res.data.mail,

@@ -19,6 +19,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+const BASE_URL = "https://desx-server.onrender.com";
+
 function SetPass() {
     const location = useLocation();
     const navigate = useNavigate();
@@ -47,7 +49,9 @@ function SetPass() {
             mail: mail,
             newPass: event.target[0].value
         }
-        let res = await axios.post('/updatepassword', data);
+        let res = await axios.post(`${BASE_URL}/updatepassword`, data, {
+          withCredentials: true
+        });
         if(res.data == "updated") {
             setIsOpen(true);
         }

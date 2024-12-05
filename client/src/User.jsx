@@ -30,6 +30,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+const BASE_URL = "https://desx-server.onrender.com";
+
 function UserPage() {
   const navigate = useNavigate();
   let [email, setEmail] = useState("user@example.com");
@@ -43,7 +45,10 @@ function UserPage() {
   let [isDel, setIsDel] = useState(false);
 
   const getUserData = async () => {
-    let userdata = await axios.get("/getuser");
+    let userdata = await axios.get(`${BASE_URL}/getuser`, {
+      withCredentials: true
+    });
+    console.log(userdata);
     setEmail(userdata.data.email);
     setName(userdata.data.name);
     setPass(userdata.data.password);
@@ -70,7 +75,9 @@ function UserPage() {
       newName: event.target[0].value,
     };
     setNameChange(!nameChange);
-    await axios.post("/updatename", data);
+    await axios.post(`${BASE_URL}/updatename`, data, {
+      withCredentials: true
+    });
     getUserData();
   };
 
@@ -82,7 +89,9 @@ function UserPage() {
       isLog: true
     };
     setPassChange(!passChange);
-    await axios.post("/updatepassword", data);
+    await axios.post(`${BASE_URL}/updatepassword`, data, {
+      withCredentials: true
+    });
     getUserData();
   };
 
@@ -219,7 +228,9 @@ function UserPage() {
             <Button
               onClick={async () => {
                 setIsLogout(false);
-                await axios.get("/logout");
+                await axios.get(`${BASE_URL}/logout`, {
+                  withCredentials: true
+                });
                 navigate("/");
               }}
             >
@@ -251,7 +262,9 @@ function UserPage() {
               variant="destructive"
               onClick={async () => {
                 setIsDel(false);
-                await axios.get("/deleteuser");
+                await axios.get(`${BASE_URL}/deleteuser`, {
+                  withCredentials: true
+                });
                 navigate("/");
               }}
             >

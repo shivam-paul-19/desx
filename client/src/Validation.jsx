@@ -22,6 +22,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+const BASE_URL = "https://desx-server.onrender.com";
+
 function Validate() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -42,7 +44,9 @@ function Validate() {
             }
             console.log(is_forget);
             if(!is_forget) {
-              await axios.post('/adduser', data);
+              await axios.post(`${BASE_URL}/adduser`, data, {
+                withCredentials: true
+              });
             } else {
               navigate('/password', {
                 state: {

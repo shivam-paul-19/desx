@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 
+const BASE_URL = "https://desx-server.onrender.com";
+
 function CanvasPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -223,7 +225,9 @@ function CanvasPage() {
       state: canvasState,
       time: new Date(Date.now()),
     };
-    let isSaved = await axios.post("/updatecanvas", canvasData);
+    let isSaved = await axios.post(`${BASE_URL}/updatecanvas`, canvasData, {
+      withCredentials: true
+    });
     if (isSaved.data) {
       setOpen(true);
       setIsSave(true);
@@ -233,7 +237,9 @@ function CanvasPage() {
 
   const deleteCanvas = async () => {
     navigate("/home");
-    await axios.post("/deletecanvas", { name: name });
+    await axios.post(`${BASE_URL}/deletecanvas`, { name: name }, {
+      withCredentials: true
+    });
   };
 
   const isSaved = () => {

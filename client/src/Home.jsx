@@ -34,7 +34,7 @@ import AddIcon from "@mui/icons-material/Add";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CanvasList from "./CanvasList";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = "https://desx-server.onrender.com";
 
 function Home() {
   let [canvases, setCanvses] = useState([]);
@@ -43,11 +43,7 @@ function Home() {
 
   const getCanvas = async () => {
     let canvasNames = await axios.get(`${BASE_URL}/getcanvas`, {
-      withCredentials: true,
-      headers: {
-        'Access-Control-Allow-Origin': 'https://desx.onrender.com',
-        'Access-Control-Allow-Method': 'GET'
-      }
+      withCredentials: true
     });
     canvases = canvasNames.data;
     setCanvses(canvases);
@@ -55,11 +51,7 @@ function Home() {
 
   const getName = async () => {
     let userName = await axios.get(`${BASE_URL}/getuser`, {
-      withCredentials: true,
-      headers: {
-        'Access-Control-Allow-Origin': 'https://desx.onrender.com',
-        'Access-Control-Allow-Method': 'GET'
-      }
+      withCredentials: true
     });
     SetName(userName.data.name);
   };
@@ -76,7 +68,9 @@ function Home() {
     let data = {
       name: event.target[0].value,
     };
-    let result = await axios.post(`${BASE_URL}/addcanvas`, data);
+    let result = await axios.post(`${BASE_URL}/addcanvas`, data, {
+      withCredentials: true
+    });
     if (result.data) {
       navigate("/canvas", {
         state: {
@@ -91,7 +85,9 @@ function Home() {
 
   const loadCanvas = async (event) => {
     let name = event.target.children[0].innerText;
-    let canState = await axios.post(`${BASE_URL}/loadcanvas`, { name: name });
+    let canState = await axios.post(`${BASE_URL}/loadcanvas`, { name: name }, {
+      withCredentials: true
+    });
     navigate("/canvas", {
       state: {
         name: name,
