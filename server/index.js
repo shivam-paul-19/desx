@@ -14,22 +14,22 @@ const port = 8080;
 dotenv.config();
 
 app.use(cors({
-    origin: "https://desx.onrender.com",
-    methods: ["GET", "POST", "OPTIONS"],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: 'https://desx.onrender.com', 
+    methods: ['GET', 'POST', 'PUT', 'OPTIONS'],
+    credentials: true, 
 }));
 
 app.use(express.json());
-app.use(cookieParser(process.env.COOKIE_SECRET_CODE));
+app.use(cookieParser());
 app.use(
   session({
-    secret: "secrerstring",
+    secret: "secret",
     resave: false,
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
-      sameSite: 'none'
+      sameSite: 'None',
+      secure: true
     },
   })
 );
@@ -84,13 +84,13 @@ app.post('/adduser', (req, res) => {
 
 app.post('/addcanvas', async (req, res) => {
     let name = req.body.name;
-    let user = req.signedCookies.uid[0].email;
+    let user = req.cookies.uid[0].email;
     let canState = await loadCanvas(user, name);
     if(canState == null) {
         let date = new Date(Date.now());
         const canvasData = {
             name: req.body.name,
-            user: req.signedCookies.uid[0].email,
+            user: req.cookies.uid[0].email,
             last_updated: date,
             canvas_state: { version: '6.4.3', objects: [], background: '#ffffff' }
         }
@@ -103,7 +103,7 @@ app.post('/addcanvas', async (req, res) => {
 
 app.post('/updatecanvas', async (req, res) => {
     const canvasData = {
-        user: req.signedCookies.uid[0].email,
+        user: req.cookies.uid[0].email,
         name: req.body.name.name,
         last_updated: req.body.time,
         canvas_state: req.body.state
@@ -114,25 +114,25 @@ app.post('/updatecanvas', async (req, res) => {
 
 app.get('/getcanvas', async (req, res) => {
     let canNames = [];
-    let canvases = await getCanvas(req.signedCookies.uid[0].email);
+    let canvases = await getCanvas(req.cookies.uid[0].email);
     canvases.forEach((c) => canNames.push([c.name, c.last_updated]));
     canNames.sort((a, b) => new Date(b[1]) - new Date(a[1]));
     res.send(canNames);
 });
 
 app.get('/getuser', (req, res) => {
-    res.send(req.signedCookies.uid[0]);
+    res.send(req.cookies.uid[0]);
 });
 
 app.post('/deletecanvas', async (req, res) => {
     let name = req.body.name;
-    let user = req.signedCookies.uid[0].email;
+    let user = req.cookies.uid[0].email;
     await deleteCanvas(user, name);
 });
 
 app.post('/loadcanvas', async (req, res) => {
     let name = req.body.name;
-    let user = req.signedCookies.uid[0].email;
+    let user = req.cookies.uid[0].email;
     let canState = await loadCanvas(user, name);
     res.send(canState.canvas_state);
 });
@@ -157,18 +157,15 @@ app.post('/updatepassword', async (req, res) => {
     if(req.body.isLog) {
         let user = [{
             email: req.body.mail,
-            name: req.signedCookies.uid[0].name,
+            name: req.cookies.uid[0].name,
             password: req.body.newPass
         }];
         res.clearCookie("uid");
         res.cookie("uid", user, {
-            expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
-            signed: true,
-            domain: ".onrender.com", // Set the domain so it's accessible across subdomains
-            httpOnly: true, // Set cookie as HttpOnly to prevent JavaScript access (for security)
-            secure: true, // Ensure it's sent over HTTPS
-            path: '/',
-            sameSite: 'none'
+            httpOnly: true,  
+            secure: true,  
+            expires: new Date(Date.now() + 1000 * 3600 * 24 * 30), // 30 days
+            sameSite: 'None' 
         });
         res.send("updated");
     } else {
@@ -179,24 +176,30 @@ app.post('/updatepassword', async (req, res) => {
 app.post('/updatename', async (req, res) => {;
     await updateName(req.body.mail, req.body.newName);
     let user = [{
-        email: req.signedCookies.uid[0].email,
+        email: req.cookies.uid[0].email,
         name: req.body.newName,
-        password: req.signedCookies.uid[0].password
+        password: req.cookies.uid[0].password
     }];
     res.clearCookie("uid");
     res.cookie("uid", user, {
-        expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
-        signed: true
+        httpOnly: true,  
+        secure: true,  
+        expires: new Date(Date.now() + 1000 * 3600 * 24 * 30), // 30 days
+        sameSite: 'None' 
     });
     res.send("updated");
 });
 
-app.get('/isuser', async (req, res) => {
-    if(req.signedCookies.uid) {
-        res.send(req.signedCookies.uid);
+app.get('/isuser', (req, res) => {
+    if(req.cookies.uid) {
+        res.send(req.cookies.uid);
     } else {
         res.send(false);
     }
+});
+
+app.get("/getcookie", (req, res) => {
+    console.log(req.cookies);
 });
 
 app.get('/logout', (req, res) => {
@@ -205,7 +208,7 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/deleteuser', async (req, res) => {
-    let user = req.signedCookies.uid[0].email;
+    let user = req.cookies.uid[0].email;
     res.clearCookie("uid");
     await deleteAll(user);
     console.log(`${user} account deleted`);
@@ -226,13 +229,10 @@ app.post('/login', async (req, res) => {
 
         if(pass === pass_db) {
             res.cookie("uid", user, {
-                expires: new Date(Date.now() + 1000 * 3600 * 24 * 30),
-                signed: true,
-                domain: ".onrender.com", // Set the domain so it's accessible across subdomains
-                httpOnly: true, // Set cookie as HttpOnly to prevent JavaScript access (for security)
-                secure: true, // Ensure it's sent over HTTPS
-                path: '/',
-                sameSite: 'none'
+                httpOnly: true,  
+                secure: true,  
+                expires: new Date(Date.now() + 1000 * 3600 * 24 * 30), // 30 days
+                sameSite: 'None' 
             });
             console.log("cookies sent");
             res.send("auth");
@@ -240,5 +240,4 @@ app.post('/login', async (req, res) => {
             res.send("no-auth");
         }
     }
-
 });
