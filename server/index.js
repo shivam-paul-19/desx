@@ -203,6 +203,7 @@ app.get("/getcookie", (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
+    req.session.destroy();
     res.clearCookie("uid");
     res.send("cookies deleted");
 });
@@ -210,8 +211,9 @@ app.get('/logout', (req, res) => {
 app.get('/deleteuser', async (req, res) => {
     let user = req.cookies.uid[0].email;
     res.clearCookie("uid");
-    await deleteAll(user);
-    console.log(`${user} account deleted`);
+    let result = await deleteAll(user);
+    console.log(`${result}`);
+    req.session.destroy();
     res.send("deleted");
 });
 

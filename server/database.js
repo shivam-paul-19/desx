@@ -93,11 +93,13 @@ export const deleteCanvas = async(user, name) => {
 }
 
 export const deleteAll = async(user) => {
-    await Canvas.deleteMany({
+    let delRes = await Canvas.deleteMany({
         user: user
     });
 
-    await User.deleteOne({
+    let userDelRes = await User.deleteOne({
         email: user
     });
+
+    return [delRes, userDelRes];
 }
