@@ -44,7 +44,7 @@ function LandingPage() {
       console.log("landing page: ",checkUser.data);
       console.log(checkUser.data.name);
       console.log(checkUser.data.islog);
-      if (checkUser.data) {
+      if (checkUser.data.islog) {
         navigate("/home", {
           state: {
             name: checkUser.data.name,
