@@ -13,6 +13,8 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import generater from "./generate";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -250,6 +252,11 @@ function CanvasPage() {
     }
   };
 
+  const generate = () => {
+    const canvasState = canvas.getObjects();
+    console.log(generater(canvasState));
+  }
+
   return (
     <div className="page">
       <div className="mainSec">
@@ -305,6 +312,7 @@ function CanvasPage() {
           download={saveCanvasAsImage}
           save={save}
           deleteCanvas={() => setIsDel(true)}
+          generate={generate}
         />
       </div>
       <Settings canvas={canvas} changeState={() => setIsSave(false)} />

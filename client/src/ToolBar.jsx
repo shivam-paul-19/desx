@@ -13,9 +13,10 @@ import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
+import CodeIcon from '@mui/icons-material/Code';
 import './toolbar.css';
 
-function ToolBar({addRect, addCircle, addText, addLine, addPen, handleImageUpload, addTriangle, clear, download, deleteCanvas, save}) {
+function ToolBar({addRect, addCircle, addText, addLine, addPen, handleImageUpload, addTriangle, clear, download, deleteCanvas, save, generate}) {
     const fileInputRef = useRef(null);
     return (
         <div className='toolbar'>
@@ -80,6 +81,11 @@ function ToolBar({addRect, addCircle, addText, addLine, addPen, handleImageUploa
           <Tooltip TransitionComponent={Zoom} title="Delete canvas">
             <IconButton onClick={deleteCanvas}>
               <DeleteOutlinedIcon style={{ color: '#ffffff' }}/>
+            </IconButton>
+          </Tooltip>
+          <Tooltip TransitionComponent={Zoom} title="Genrate HTML">
+            <IconButton onClick={generate}>
+              <CodeIcon style={{ color: '#ffffff' }}/>
             </IconButton>
           </Tooltip>
         </div>
