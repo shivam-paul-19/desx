@@ -12,6 +12,7 @@ import IconButton from "@mui/material/IconButton";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Layers from "./Layers";
 
 import generater from "./generate";
 
@@ -42,7 +43,16 @@ function CanvasPage() {
   const [isSave, setIsSave] = useState(true);
   const fileInputRef = useRef(null);
   const [guideLines, setGuideLines] = useState([]);
+
+  const [layerPan, setLayerPan] = useState([]);
   const { name, canvasJSON } = location.state || {};
+
+  let z_index = -1;
+  const setZidx = (obj) => {
+    obj.z_index = ++z_index;
+    console.log(layerPan);
+    console.log(typeof(layerPan));
+  }
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -70,7 +80,10 @@ function CanvasPage() {
         setIsSave(false);
       });
 
-      initCanvas.on("object:added", () => {
+      initCanvas.on("object:added", (e) => {
+        setZidx(e.target);
+        layerPan.push(e.target.type);
+        setLayerPan(layerPan);
         setIsSave(false);
       });
 
@@ -315,8 +328,12 @@ function CanvasPage() {
           generate={generate}
         />
       </div>
+     
+     <div className="side-container">
       <Settings canvas={canvas} changeState={() => setIsSave(false)} />
-
+      <Layers panel={layerPan}/>
+     </div>
+     
       {/* for deletion */}
       <AlertDialog open={isDel} onOpenChange={setIsDel}>
         <AlertDialogContent>

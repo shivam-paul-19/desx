@@ -13,3 +13,11 @@
   align-items: center;
   height: 40px;
 }
+
+.side-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 20%;
+  height: 80%;
+}

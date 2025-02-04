@@ -2,10 +2,11 @@
     margin: auto;
     display: flex;
     border-radius: 10px;
+    border: 1px white solid;
     justify-content: center;
     align-items: center;
     height: 50px;
-    width: 500px;
-    background-color: rgb(67, 67, 67);
+    width: 550px;
+    background-color: rgb(22, 22, 22);
     margin-top: 30px;
 }

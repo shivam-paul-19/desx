@@ -496,8 +496,10 @@ function Settings({ canvas, changeState }) {
                             }}
                             onChange={handleWidthChange}
                         /> <br />
-                        <label for="exampleColorInput" class="form-label">Fill Color</label>
-                        <input type="color" class="form-control form-control-color" id="exampleColorInput" value={color} title="Choose your color" onChange={handleColorChange}/>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <label style={{width: 200}} for="exampleColorInput" class="form-label">Fill Color</label>
+                            <input type="color" class="form-control form-control-color" id="exampleColorInput" value={color} title="Choose your color" onChange={handleColorChange}/>
+                        </div>
                         <br />
                         <TextField
                             id="outlined-number"
@@ -511,8 +513,10 @@ function Settings({ canvas, changeState }) {
                             }}
                             onChange={handleStrokeWidthChange}
                         /> <br />
-                        <label for="exampleColorInput" class="form-label">Stroke Color</label>
-                        <input type="color" class="form-control form-control-color" id="exampleColorInput" value={strokeColor} title="Choose your color" onChange={handleStrokeColorChange}/>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
+                            <label style={{width: 200}} for="exampleColorInput" class="form-label">Stroke Color</label>
+                            <input type="color" class="form-control form-control-color" id="exampleColorInput" value={strokeColor} title="Choose your color" onChange={handleStrokeColorChange}/>
+                        </div>
                     </>
                 )}
 

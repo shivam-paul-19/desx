@@ -1,11 +1,12 @@
 .setting {
     background-color: white;
-    border-radius: 10px;
-    height: 80%;
-    width: 20%;
+    /* border-radius: 10px; */
+    height: 50%;
+    width: 100%;
     padding: 20px;
     display: flex;
     flex-direction: column;
+    overflow-x: scroll;
 }
 
 #exampleColorInput {
