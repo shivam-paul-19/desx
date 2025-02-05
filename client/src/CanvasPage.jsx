@@ -48,14 +48,16 @@ function CanvasPage() {
   const { name, canvasJSON } = location.state || {};
 
   let z_index = -1;
-  const setZidx = (obj) => {
-    obj.z_index = ++z_index;
-    console.log(layerPan);
-    console.log(typeof(layerPan));
-  }
-
+  
   useEffect(() => {
     if (canvasRef.current) {
+
+      const setZidx = (obj) => {
+        obj.z_index = ++z_index;
+        layerPan.unshift(obj.type);
+        setLayerPan(layerPan);
+      }
+
       setTimeout(() => {
         setIsSave(true);
       }, 100);
@@ -81,10 +83,12 @@ function CanvasPage() {
       });
 
       initCanvas.on("object:added", (e) => {
-        setZidx(e.target);
-        layerPan.push(e.target.type);
-        setLayerPan(layerPan);
-        setIsSave(false);
+        if(e.target && e.target.type != "line") {
+          setZidx(e.target);
+          console.log(layerPan);
+          initCanvas.renderAll();
+          setIsSave(false);
+        }
       });
 
       initCanvas.on("object:removed", () => {
@@ -331,7 +335,7 @@ function CanvasPage() {
      
      <div className="side-container">
       <Settings canvas={canvas} changeState={() => setIsSave(false)} />
-      <Layers panel={layerPan}/>
+      <Layers canvas={canvas} />
      </div>
      
       {/* for deletion */}
