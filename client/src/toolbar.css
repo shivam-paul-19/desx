@@ -12,5 +12,5 @@
 }
 
 .toolbar_opts:hover {
-    font-size: 35px;
+    transform: scale(1.5);
 }

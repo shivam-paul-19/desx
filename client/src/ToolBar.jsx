@@ -6,7 +6,6 @@ import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined';
 import TextFieldsOutlinedIcon from '@mui/icons-material/TextFieldsOutlined';
 import IconButton from '@mui/material/IconButton';
 import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
-import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 import ChangeHistoryIcon from '@mui/icons-material/ChangeHistory';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
@@ -21,40 +20,40 @@ function ToolBar({addRect, addCircle, addText, addLine, addPen, handleImageUploa
     return (
         <div className='toolbar'>
           <Tooltip TransitionComponent={Zoom} title="Rectangle tool">
-            <IconButton onClick={addRect}>
-              <RectangleOutlinedIcon style={{ color: '#ffffff' }} className='toolbar_opts' />
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={addRect}>
+              <RectangleOutlinedIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Circle tool">
-            <IconButton onClick={addCircle}>
-              <CircleOutlinedIcon style={{ color: '#ffffff' }} className='toolbar_opts'/>
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={addCircle}>
+              <CircleOutlinedIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Triangle tool">
-            <IconButton onClick={addTriangle}>
-              <ChangeHistoryIcon style={{ color: '#ffffff' }} className='toolbar_opts'/>
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={addTriangle}>
+              <ChangeHistoryIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Line tool">
-            <IconButton onClick={addLine}>
-              <TimelineOutlinedIcon style={{ color: '#ffffff' }} className='toolbar_opts'/>
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={addLine}>
+              <TimelineOutlinedIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Text tool">
-            <IconButton onClick={addText}>
-              <TextFieldsOutlinedIcon style={{ color: '#ffffff' }} className='toolbar_opts'/>
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={addText}>
+              <TextFieldsOutlinedIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Image tool">
             <IconButton >
               <label htmlFor="file-input" style={{display: 'flex'}}>
-                <ImageOutlinedIcon style={{ color: '#ffffff' }}  className='toolbar_opts'/>
+                <ImageOutlinedIcon style={{ color: '#ffffff' }}  />
               </label>
             </IconButton>
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Clear canvas">
-            <IconButton onClick={clear}>
-              <ClearOutlinedIcon style={{ color: '#ffffff' }} className='toolbar_opts'/>
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={clear}>
+              <ClearOutlinedIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
             <input
@@ -65,27 +64,27 @@ function ToolBar({addRect, addCircle, addText, addLine, addPen, handleImageUploa
                 style={{ display: 'none' }}
                 onChange={handleImageUpload}
             />
-          {/* <IconButton onClick={addPen}>
+          {/* <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={addPen}>
             <CreateOutlinedIcon style={{ color: '#ffffff' }}/>
             </IconButton> */}
           <Tooltip TransitionComponent={Zoom} title="Download as PNG">
-            <IconButton onClick={download}>
-              <FileDownloadOutlinedIcon style={{ color: '#ffffff' }} className='toolbar_opts'/>
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={download}>
+              <FileDownloadOutlinedIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Save">
-            <IconButton onClick={save}>
-              <SaveOutlinedIcon style={{ color: '#ffffff' }} className='toolbar_opts'/>
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={save}>
+              <SaveOutlinedIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Delete canvas">
-            <IconButton onClick={deleteCanvas}>
-              <DeleteOutlinedIcon style={{ color: '#ffffff' }} className='toolbar_opts'/>
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={deleteCanvas}>
+              <DeleteOutlinedIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Genrate HTML">
-            <IconButton onClick={generate}>
-              <CodeIcon style={{ color: '#ffffff' }} className='toolbar_opts'/>
+            <IconButton sx={{transition: "transform 0.1s ease-in-out"}} className='toolbar_opts' onClick={generate}>
+              <CodeIcon style={{ color: '#ffffff' }} />
             </IconButton>
           </Tooltip>
         </div>

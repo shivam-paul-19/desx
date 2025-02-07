@@ -129,6 +129,7 @@ function CanvasPage() {
       });
 
       canvas.add(cir);
+      canvas.setActiveObject(cir);
     }
   };
 
