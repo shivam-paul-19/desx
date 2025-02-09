@@ -30,6 +30,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 const BASE_URL = "https://desx-server.onrender.com";
+const IMG_API_KEY = import.meta.env.VITE_IMG_API;
 
 function CanvasPage() {
   const location = useLocation();
@@ -186,6 +187,15 @@ function CanvasPage() {
     }
   };
 
+  const getUrl = async (src) => {
+    const formData = new FormData();
+    formData.append("image", src.split(",")[1]);
+    let url =  await axios.post(`https://api.imgbb.com/1/upload?expiration=600&key=${IMG_API_KEY}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return url.data.data.url;
+  }
+
   const addImage = (event) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith("image/")) {
@@ -195,9 +205,16 @@ function CanvasPage() {
         const imgURL = e.target.result;
         let imageEl = document.createElement("img");
         imageEl.src = imgURL;
-        imageEl.onload = () => {
+        imageEl.onload = async () => {
           let image = new Image(imageEl);
+          image.set({scaleY: (100/image.height)});
+          let newWidth = image.width/image.height*100;
+          image.set({scaleX: newWidth/image.width});
+          let htmlSrc = await getUrl(image._element.src);
+          image.set({htmlSrc: htmlSrc});
+          console.log(image);
           canvas.add(image);
+          console.log(image.htmlSrc);
           canvas.centerObject(image);
           canvas.setActiveObject(image);
         };

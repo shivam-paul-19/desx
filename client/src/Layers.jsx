@@ -34,7 +34,6 @@ function Layers({ canvas }) {
         type: obj.type,
       }));
 
-      console.log("Updating layers:", objects); // Check if objects are correctly fetched
       setLayers(objects.reverse()); // Update state with reversed layers
     }
   };
@@ -120,10 +119,6 @@ function Layers({ canvas }) {
       };
     }
   }, [canvas]);
-
-  useEffect(() => {
-    console.log("Layers state updated:", layers); // Log updated layers
-  }, [layers]);
 
   return (
     <div className="layer-panel">
