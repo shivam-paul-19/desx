@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, forwardRef } from "react";
 import { Canvas, Circle, Rect, IText, Line, Image, Triangle } from "fabric";
 import ToolBar from "./ToolBar";
 import "./canvaspage.css";
@@ -13,6 +13,19 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Layers from "./Layers";
+
+import Dialog from '@mui/material/Dialog';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Slide from '@mui/material/Slide';
+
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
+
+const Transition = forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 import generater from "./generate";
 
@@ -47,6 +60,19 @@ function CanvasPage() {
 
   const [layerPan, setLayerPan] = useState([]);
   const { name, canvasJSON } = location.state || {};
+
+  const [openHTML, setOpenHTML] = useState(false);
+  const [isLoad, setIsLoad] = useState(false);
+  const [html, setHtml] = useState("");
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpenHTML(true);
+  };
+
+  const handleClose = () => {
+    setOpenHTML(false);
+  };
 
   let z_index = -1;
   
@@ -287,10 +313,25 @@ function CanvasPage() {
     }
   };
 
-  const generate = () => {
+  const generate = async () => {
     const canvasState = canvas.getObjects();
-    console.log(generater(canvasState));
-  }
+    setIsLoad(true);
+    let html = await generater(canvasState);
+    setTimeout(() => {
+      setIsLoad(false);
+    }, 2000);
+    setHtml(html);
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(html);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy text:", err);
+    }
+  };
 
   return (
     <div className="page">
@@ -347,23 +388,26 @@ function CanvasPage() {
           download={saveCanvasAsImage}
           save={save}
           deleteCanvas={() => setIsDel(true)}
-          generate={generate}
+          generate={() => {
+            handleClickOpen();
+            generate();
+          }}
         />
       </div>
-     
-     <div className="side-container">
-      <Settings canvas={canvas} changeState={() => setIsSave(false)} />
-      <Layers canvas={canvas} />
-     </div>
-     
+
+      <div className="side-container">
+        <Settings canvas={canvas} changeState={() => setIsSave(false)} />
+        <Layers canvas={canvas} />
+      </div>
+
       {/* for deletion */}
       <AlertDialog open={isDel} onOpenChange={setIsDel}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the whole 
-              canvas and canvas data.
+              This action cannot be undone. This will permanently delete the
+              whole canvas and canvas data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -406,6 +450,40 @@ function CanvasPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog
+        fullScreen
+        open={openHTML}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+      >
+        <AppBar sx={{ position: "relative" }}>
+          <Toolbar>
+            <IconButton
+              edge="start"
+              color="inherit"
+              onClick={handleClose}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              HTML Code
+            </Typography>
+            <Button autoFocus color="inherit" onClick={copyToClipboard}>
+              {copySuccess ? "Copied!" : "Copy"}
+            </Button>
+          </Toolbar>
+        </AppBar>
+        {isLoad ? (
+          <Box sx={{ display: "flex", height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+            <CircularProgress />
+            <h3>Converting to HTML</h3>
+          </Box>
+        ) : (
+          <pre>{html}</pre>
+        )}
+      </Dialog>
     </div>
   );
 }

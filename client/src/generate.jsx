@@ -2,9 +2,11 @@ function generater(fabricCanvas) {
     let html = "";
 
     function calculateAngle(obj) {
-        const angleInRadians = Math.atan2(obj.height, obj.width);
-        const angleInDegrees = angleInRadians * (180 / Math.PI);
-        return angleInDegrees;
+        return obj.angle || (Math.atan2(obj.y2 - obj.y1, obj.x2 - obj.x1) * (180 / Math.PI));
+    }
+    
+    function calculateLength(obj) {
+        return Math.sqrt(Math.pow(obj.x2 - obj.x1, 2) + Math.pow(obj.y2 - obj.y1, 2));
     }
 
     fabricCanvas.forEach(obj => {
@@ -40,8 +42,17 @@ function generater(fabricCanvas) {
         // TODO
         else if (obj.type === 'line') {
             const angle = calculateAngle(obj);
-            html += `<div style="width: ${obj.width}px; height: 0; border-top: ${obj.strokeWidth}px solid ${obj.stroke}; transform: rotate(${180-angle}deg); position: absolute; top: ${obj.top}px; left: ${obj.left}px;"></div>`;
-        } 
+            const length = calculateLength(obj);
+            
+            html += `<div style="
+                width: ${length}px; 
+                height: 0; 
+                border-top: ${obj.strokeWidth}px solid ${obj.stroke}; 
+                position: absolute; 
+                top: ${obj.top}px; 
+                left: ${obj.left}px; 
+                transform: rotate(${angle}deg);transform-origin: left center;"></div>`;
+        }
 
         else if (obj.type === 'i-text') {
             let textStyle = `color:${obj.fill}; font-family:${obj.fontFamily}; font-size:${obj.fontSize}px; background:transparent;`;
