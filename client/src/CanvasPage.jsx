@@ -14,14 +14,14 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Layers from "./Layers";
 
-import Dialog from '@mui/material/Dialog';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Slide from '@mui/material/Slide';
+import Dialog from "@mui/material/Dialog";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Slide from "@mui/material/Slide";
 
-import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -75,15 +75,14 @@ function CanvasPage() {
   };
 
   let z_index = -1;
-  
+
   useEffect(() => {
     if (canvasRef.current) {
-
       const setZidx = (obj) => {
         obj.z_index = ++z_index;
         layerPan.unshift(obj.type);
         setLayerPan(layerPan);
-      }
+      };
 
       setTimeout(() => {
         setIsSave(true);
@@ -110,7 +109,7 @@ function CanvasPage() {
       });
 
       initCanvas.on("object:added", (e) => {
-        if(e.target && e.target.type != "line") {
+        if (e.target && e.target.type != "line") {
           setZidx(e.target);
           console.log(layerPan);
           initCanvas.renderAll();
@@ -216,11 +215,15 @@ function CanvasPage() {
   const getUrl = async (src) => {
     const formData = new FormData();
     formData.append("image", src.split(",")[1]);
-    let url =  await axios.post(`https://api.imgbb.com/1/upload?expiration=600&key=${IMG_API_KEY}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    let url = await axios.post(
+      `https://api.imgbb.com/1/upload?expiration=600&key=${IMG_API_KEY}`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
     return url.data.data.url;
-  }
+  };
 
   const addImage = (event) => {
     const file = event.target.files[0];
@@ -233,11 +236,11 @@ function CanvasPage() {
         imageEl.src = imgURL;
         imageEl.onload = async () => {
           let image = new Image(imageEl);
-          image.set({scaleY: (100/image.height)});
-          let newWidth = image.width/image.height*100;
-          image.set({scaleX: newWidth/image.width});
+          image.set({ scaleY: 100 / image.height });
+          let newWidth = (image.width / image.height) * 100;
+          image.set({ scaleX: newWidth / image.width });
           let htmlSrc = await getUrl(image._element.src);
-          image.set({htmlSrc: htmlSrc});
+          image.set({ htmlSrc: htmlSrc });
           console.log(image);
           canvas.add(image);
           console.log(image.htmlSrc);
@@ -289,7 +292,7 @@ function CanvasPage() {
       time: new Date(Date.now()),
     };
     let isSaved = await axios.post(`${BASE_URL}/updatecanvas`, canvasData, {
-      withCredentials: true
+      withCredentials: true,
     });
     if (isSaved.data) {
       setOpen(true);
@@ -299,9 +302,13 @@ function CanvasPage() {
   };
 
   const deleteCanvas = async () => {
-    let res = await axios.post(`${BASE_URL}/deletecanvas`, { name: name }, {
-      withCredentials: true
-    });
+    let res = await axios.post(
+      `${BASE_URL}/deletecanvas`,
+      { name: name },
+      {
+        withCredentials: true,
+      }
+    );
     navigate("/home");
   };
 
@@ -476,7 +483,15 @@ function CanvasPage() {
           </Toolbar>
         </AppBar>
         {isLoad ? (
-          <Box sx={{ display: "flex", height: "100%", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
+          <Box
+            sx={{
+              display: "flex",
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
             <CircularProgress />
             <h3>Converting to HTML</h3>
           </Box>

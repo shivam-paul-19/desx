@@ -12,8 +12,12 @@ function generater(fabricCanvas) {
     fabricCanvas.forEach(obj => {
         let width = Math.floor(obj.width * obj.scaleX);
         let height = Math.floor(obj.height * obj.scaleY);
-        let style = `position:absolute; left:${Math.floor(obj.left)}px; top:${Math.floor(obj.top)}px;`;
 
+        let style = `position:absolute; left:${Math.floor((obj.left*100)/1000)}%; top:${Math.floor((obj.top*100)/500)}%;`;
+        if(obj.type === 'i-text') {
+            style = `position:absolute; left:${Math.floor((obj.left*100)/1000)}%; top:${Math.floor((obj.top*100)/500) < 20? 0: Math.floor((obj.top*100)/500) - 3}%;`;
+        }
+        
         // Apply stroke and fill where applicable
         if (obj.stroke && obj.strokeWidth > 0) {
             style += `border:${obj.strokeWidth}px solid ${obj.stroke};`;
@@ -22,13 +26,15 @@ function generater(fabricCanvas) {
         if (obj.fill && obj.type !== 'i-text') {
             style += `background-color:${obj.fill};`;
         }
-
+        
         if (obj.type === 'rect') {
-            html += `<div style="width:${width}px; height:${height}px; ${style}"></div>\n`;
+            height = (height>500)? 100: Math.round((height/500)*100);
+            width = (width > 1000)? 100: Math.round((width/1000)*100);
+            html += `<div style="width:${width}%; height:${height}%; ${style}"></div>\n`;
         } 
 
         else if (obj.type === 'circle') {
-            html += `<div style="width:${width}px; height:${height}px; border-radius:50%; ${style}"></div>\n`;
+            html += `<div style="width:${width}%; height:${height}%; border-radius:50%; ${style}"></div>\n`;
         } 
 
         else if (obj.type === 'triangle') {
@@ -55,7 +61,7 @@ function generater(fabricCanvas) {
         }
 
         else if (obj.type === 'i-text') {
-            let textStyle = `color:${obj.fill}; font-family:${obj.fontFamily}; font-size:${obj.fontSize}px; background:transparent;`;
+            let textStyle = `color:${obj.fill}; font-family:${obj.fontFamily}; font-size:${obj.fontSize + 10}px;`;
             if (obj.fontWeight === 'bold') textStyle += "font-weight:bold;";
             if (obj.fontStyle === 'italic') textStyle += "font-style:italic;";
             if (obj.underline) textStyle += "text-decoration:underline;";
@@ -63,7 +69,8 @@ function generater(fabricCanvas) {
         } 
 
         else if (obj.type === 'image') {
-            html += `<img src="${obj.htmlSrc}" style="width:${width}px; height:${height}px; ${style}">\n`;
+            height = (height>500)? 100: Math.round((height/500)*100);
+            html += `<img src="${obj.htmlSrc}" style="height:${height}%; ${style}">\n`;
         }
     });
 

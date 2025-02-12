@@ -46,7 +46,7 @@ function ToolBar({addRect, addCircle, addText, addLine, addPen, handleImageUploa
           </Tooltip>
           <Tooltip TransitionComponent={Zoom} title="Image tool">
             <IconButton >
-              <label htmlFor="file-input" style={{display: 'flex'}}>
+              <label htmlFor="file-input" style={{display: 'flex', transition: "transform 0.1s ease-in-out"}} className='toolbar_opts'>
                 <ImageOutlinedIcon style={{ color: '#ffffff' }}  />
               </label>
             </IconButton>

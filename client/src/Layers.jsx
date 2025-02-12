@@ -148,7 +148,7 @@ function Layers({ canvas }) {
               onClick={() => selectLayerInCanvas(el.zId)}
               className={el.zId == selectedLayer ? "selected" : "non_selected"}
             >
-              {el.type}
+              {el.type == 'i-text'? "Text": el.type}
               {el.id}
             </li>
           ))
