@@ -145,6 +145,33 @@ function Home() {
                 <Input id="name" defaultValue="" className="col-span-3" />
               </div>
             </div>
+            <div className="grid gap-4 py-4">
+            <label htmlFor="template">Select a Template</label>
+            <select name="template" id="template" style={{backgroundColor: "black"}}>
+              <option value="blank">Blank canvas (default)</option>
+              <option value="login">Login Page</option>
+              <option value="login">Home Page</option>
+              <option value="login">Contact us Page</option>
+            </select>
+            </div> <br />
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between"
+            }}>
+            <label for="exampleColorInput" class="form-label">Primary Color</label>
+            <input type="color" class="form-control form-control-color" id="exampleColorInput" title="Choose your color" style={{
+              width: "40%"
+            }}/>
+            </div> <br />
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between"
+            }}>
+            <label for="exampleColorInput" class="form-label">Secondary Color</label>
+            <input type="color" class="form-control form-control-color" id="exampleColorInput" title="Choose your color" style={{
+              width: "40%"
+            }}/>
+            </div> <br />
             <DialogFooter>
               <Button type="submit">Create</Button>
             </DialogFooter>
