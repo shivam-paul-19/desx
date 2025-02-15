@@ -67,10 +67,11 @@ function Home() {
     event.preventDefault();
     let data = {
       name: event.target[0].value,
+      template: event.target[1].value,
+      prim_col: event.target[2].value,
+      sec_col: event.target[3].value
     };
-    let result = await axios.post(`${BASE_URL}/addcanvas`, data, {
-      withCredentials: true
-    });
+    let result = await axios.post(`http://localhost:8080/addcanvas`, data);
     if (result.data) {
       navigate("/canvas", {
         state: {

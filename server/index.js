@@ -14,7 +14,7 @@ const port = 8080;
 dotenv.config();
 
 app.use(cors({
-    origin: 'https://desx.onrender.com', 
+    origin: ['https://desx.onrender.com', "http://localhost:5173"], 
     methods: ['GET', 'POST', 'PUT', 'OPTIONS'],
     credentials: true, 
 }));
@@ -84,15 +84,17 @@ app.post('/adduser', (req, res) => {
 
 app.post('/addcanvas', async (req, res) => {
     let name = req.body.name;
-    let user = req.cookies.uid[0].email;
+    // let user = req.cookies.uid[0].email;
+    let user = "shivampaul2319@gmail.com";
+    let template = req.body.template;
     let canState = await loadCanvas(user, name);
     if(canState == null) {
         let date = new Date(Date.now());
         const canvasData = {
             name: req.body.name,
-            user: req.cookies.uid[0].email,
+            user: "shivampaul2319@gmail.com",
             last_updated: date,
-            canvas_state: { version: '6.4.3', objects: [], background: '#ffffff' }
+            canvas_state: (template == "blank")? { version: '6.4.3', objects: [], background: '#ffffff' } : "need to done"
         }
         await insertCanvas(canvasData);
         res.send(true);
