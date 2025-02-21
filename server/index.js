@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { response } from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import session from 'express-session';
@@ -7,6 +7,7 @@ import { sendMail } from './mailing.js';
 import cors from "cors";
 import { deleteAll, deleteCanvas, getCanvas, insertCanvas, insertUser, loadCanvas, updateCanvas, updateName, updatePassword } from './database.js';
 import { User } from './models/users.js';
+import templates from './templates.js';
 const app = express();
 
 const port = 8080;
@@ -47,6 +48,17 @@ main()
 
 async function main() {
   await mongoose.connect(process.env.MONGO_URL);
+}
+
+const getTemplate = (temp) => {
+    switch (temp) {
+        case "login":
+            return templates.login;
+        case "contact":
+            return templates.contact;
+        case "home":
+            return templates.home;
+    }
 }
 
 // name, email and password
@@ -94,10 +106,10 @@ app.post('/addcanvas', async (req, res) => {
             name: req.body.name,
             user: "shivampaul2319@gmail.com",
             last_updated: date,
-            canvas_state: (template == "blank")? { version: '6.4.3', objects: [], background: '#ffffff' } : "need to done"
+            canvas_state: (template == "blank")? { version: '6.4.3', objects: [], background: '#ffffff' } : await getTemplate(template)
         }
         await insertCanvas(canvasData);
-        res.send(true);
+        res.send(canvasData);
     } else {
         res.send(false);
     }

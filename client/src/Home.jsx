@@ -72,11 +72,11 @@ function Home() {
       sec_col: event.target[3].value
     };
     let result = await axios.post(`http://localhost:8080/addcanvas`, data);
-    if (result.data) {
+    if (result.data != false) {
       navigate("/canvas", {
         state: {
           name: event.target[0].value,
-          canvasJSON: { version: "6.4.3", objects: [], background: "#ffffff" },
+          canvasJSON: result.data.canvas_state,
         },
       });
     } else if (result.data == false) {
@@ -151,8 +151,8 @@ function Home() {
             <select name="template" id="template" style={{backgroundColor: "black"}}>
               <option value="blank">Blank canvas (default)</option>
               <option value="login">Login Page</option>
-              <option value="login">Home Page</option>
-              <option value="login">Contact us Page</option>
+              <option value="home">Home Page</option>
+              <option value="contact">Contact us Page</option>
             </select>
             </div> <br />
             <div style={{
