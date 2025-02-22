@@ -96,15 +96,14 @@ app.post('/adduser', (req, res) => {
 
 app.post('/addcanvas', async (req, res) => {
     let name = req.body.name;
-    // let user = req.cookies.uid[0].email;
-    let user = "shivampaul2319@gmail.com";
+    let user = req.cookies.uid[0].email;
     let template = req.body.template;
     let canState = await loadCanvas(user, name);
     if(canState == null) {
         let date = new Date(Date.now());
         const canvasData = {
             name: req.body.name,
-            user: "shivampaul2319@gmail.com",
+            user: user,
             last_updated: date,
             canvas_state: (template == "blank")? { version: '6.4.3', objects: [], background: '#ffffff' } : await getTemplate(template)
         }

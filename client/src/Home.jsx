@@ -67,11 +67,9 @@ function Home() {
     event.preventDefault();
     let data = {
       name: event.target[0].value,
-      template: event.target[1].value,
-      prim_col: event.target[2].value,
-      sec_col: event.target[3].value
+      template: event.target[1].value
     };
-    let result = await axios.post(`http://localhost:8080/addcanvas`, data);
+    let result = await axios.post(`${BASE_URL}/addcanvas`, data);
     if (result.data != false) {
       navigate("/canvas", {
         state: {
@@ -154,24 +152,6 @@ function Home() {
               <option value="home">Home Page</option>
               <option value="contact">Contact us Page</option>
             </select>
-            </div> <br />
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between"
-            }}>
-            <label for="exampleColorInput" class="form-label">Primary Color</label>
-            <input type="color" class="form-control form-control-color" id="exampleColorInput" title="Choose your color" style={{
-              width: "40%"
-            }}/>
-            </div> <br />
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between"
-            }}>
-            <label for="exampleColorInput" class="form-label">Secondary Color</label>
-            <input type="color" class="form-control form-control-color" id="exampleColorInput" title="Choose your color" style={{
-              width: "40%"
-            }}/>
             </div> <br />
             <DialogFooter>
               <Button type="submit">Create</Button>
